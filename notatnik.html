@@ -124,7 +124,7 @@
 						przewidywanyCzas=trasa[1]+0.25
 					}
 				}
-				element.innerHTML=`Szacowany koniec ${funkcjeCzasu.pokazGodzine(funkcjeCzasu.dodajMinuty(przewidywanyCzas*60,trasaTeraz.czasStart)[0])}`
+				element.innerHTML=`Szacowany koniec ${funkcjeCzasu.pokazGodzine(funkcjeCzasu.dodajMinuty(przewidywanyCzas*60,JSON.parse(JSON.stringify(trasaTeraz.czasStart)))[0])}`
 				t.appendChild(element)
 				element=document.createElement("div")
 				element.className="wartosc wartoscDuza"
