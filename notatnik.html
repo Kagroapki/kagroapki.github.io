@@ -444,7 +444,7 @@
 							t.appendChild(element)
 							element=document.createElement("div")
 							element.className="wartosc wartoscDuza nieklikalna"
-							element.innerHTML=`ilość kursów: ${miesiace[a][b].length}`
+							element.innerHTML=`Liczba kursów: ${miesiace[a][b].length}`
 							t.appendChild(element)
 						}
 					}
@@ -457,7 +457,7 @@
 			const nazwyTras=JSON.parse(localStorage.getItem("AgroNotatnik-nazwyTras")||`[]`)||[]
 			element=document.createElement("div")
 			element.className="wartosc wartoscDuza nieklikalna"
-			element.innerHTML="ilości kursów i średni czas"
+			element.innerHTML="Liczby kursów i średni czas"
 			t.appendChild(element)
 			const trasy=[[],[]]
 			for (let a=0 ; a<nazwyTras.length ; a++)
