@@ -87,6 +87,7 @@
 <script type="text/javascript">
 	let trasaTeraz=0
 	let wyszukaneTrasy=[]
+	let edytowanaTrasa=0
 	ekran=
 	{
 		czysc:function()
@@ -259,8 +260,11 @@
 		nowa:function()
 		{
 			ekran.czysc()
-			trasaTeraz={czasStart:[funkcjeCzasu.aktualnaGodzina(),funkcjeCzasu.aktualnaData()]}
-			trasaTeraz.czasStart[0][1]=Math.floor(trasaTeraz.czasStart[0][1]/5)*5
+			if (!trasaTeraz)
+			{
+				trasaTeraz={czasStart:[funkcjeCzasu.aktualnaGodzina(),funkcjeCzasu.aktualnaData()]}
+				trasaTeraz.czasStart[0][1]=Math.floor(trasaTeraz.czasStart[0][1]/5)*5
+			}
 			//
 			const t=document.createElement("div")
 			let element=document.createElement("div")
@@ -444,7 +448,7 @@
 							t.appendChild(element)
 							element=document.createElement("div")
 							element.className="wartosc wartoscDuza nieklikalna"
-							element.innerHTML=`Liczba kursów: ${miesiace[a][b].length}`
+							element.innerHTML=`ilość kursów: ${miesiace[a][b].length}`
 							t.appendChild(element)
 						}
 					}
@@ -457,7 +461,7 @@
 			const nazwyTras=JSON.parse(localStorage.getItem("AgroNotatnik-nazwyTras")||`[]`)||[]
 			element=document.createElement("div")
 			element.className="wartosc wartoscDuza nieklikalna"
-			element.innerHTML="Liczby kursów i średni czas"
+			element.innerHTML="ilości kursów i średni czas"
 			t.appendChild(element)
 			const trasy=[[],[]]
 			for (let a=0 ; a<nazwyTras.length ; a++)
@@ -664,8 +668,60 @@
 					t.appendChild(element)
 				}
 			}
+			element=document.createElement("div")
+			element.className="separator"
+			t.appendChild(element)
+			element=document.createElement("div")
+			element.className="separator"
+			t.appendChild(element)
+			element=document.createElement("div")
+			element.className="wartosc wartoscDuza"
+			element.innerHTML="Popraw wprowadzony czas"
+			element.onclick=new Function(`ekran.edytuj(${nrTrasy})`)
+			t.appendChild(element)
 			ekran.wstaw(t)
-		}
+		},
+		edytuj:function(nrTrasy)
+		{
+			edytowanaTrasa=JSON.parse(localStorage.getItem("AgroNotatnik-trasaNr-"+nrTrasy))
+			ekran.czysc()
+			const t=document.createElement("div")
+			let element=document.createElement("div")
+			element.className="wartosc wartoscDuza"
+			element.innerHTML="Wróć do menu"
+			element.onclick=ekran.menuGlowne
+			t.appendChild(element)
+			element=document.createElement("div")
+			element.className="separator"
+			t.appendChild(element)
+			//
+			if (!edytowanaTrasa || typeof edytowanaTrasa!="object"){return}
+			element=document.createElement("div")
+			element.className="wartosc wartoscDuza nieklikalna"
+			element.innerHTML=`${edytowanaTrasa.nazwa}`
+			t.appendChild(element)
+			//
+			element=document.createElement("div")
+			element.className="wartosc wartoscDuza nieklikalna"
+			element.innerHTML=`Poprawny czas rozpoczęcia:`
+			t.appendChild(ekran.elementCzas("edytowanaTrasa.czasStart"))
+			element=document.createElement("div")
+			element.className="separator"
+			t.appendChild(element)
+			element=document.createElement("div")
+			element.className="wartosc wartoscDuza nieklikalna"
+			element.innerHTML=`Poprawny czas zakończenia:`
+			t.appendChild(ekran.elementCzas("edytowanaTrasa.czasKoniec"))
+			element=document.createElement("div")
+			element.className="separator"
+			t.appendChild(element)
+			element=document.createElement("div")
+			element.className="wartosc wartoscDuza"
+			element.innerHTML="zapisz"
+			element.onclick = new Function(`edytujTrase(${nrTrasy})`)
+			t.appendChild(element)
+			ekran.wstaw(t)
+		},
 	}
 	funkcjeCzasu=
 	{
@@ -681,6 +737,7 @@
 		},
 		poprawnaData(data)
 		{
+			data=JSON.parse(JSON.stringify(data))
 			const teraz = new Date(data[1][2],data[1][1]-1,data[1][0],data[0][0],data[0][1])
 			if (teraz.getHours()!=data[0][0]){console.log("niezgodność godzin");return false}
 			if (teraz.getMinutes()!=data[0][1]){console.log("niezgodność minut");return false}
@@ -902,6 +959,11 @@
 				}
 			}
 		}
+		else if (nazwa.length>15)
+		{
+			alert("nazwa trasy nie może być taka długa")
+			return
+		}
 		if (JSON.parse(localStorage.getItem("AgroNotatnik-trasaTeraz")||"0")){return}
 		console.log(JSON.stringify(trasaTeraz.czasStart))
 		if (funkcjeCzasu.poprawnaData(trasaTeraz.czasStart))
@@ -917,7 +979,7 @@
 	{
 		if (!funkcjeCzasu.poprawnaData(trasaTeraz.czasKoniec)){return}
 		trasaTeraz.czasTrwania=funkcjeCzasu.roznicaCzasu(trasaTeraz.czasStart,trasaTeraz.czasKoniec)
-		if (trasaTeraz.czasTrwania<30){console.log(`zbyt krótki czas trwania (${trasaTeraz.czasTrwania})`);return}
+		if (trasaTeraz.czasTrwania<30 || trasaTeraz.czasTrwania>1020){alert(`wkradł się jakiś błąd. Czas trwania kursu jest zbyt krótki lub zbyt długi.`);console.log(`zbyt krótki lub zbyt długi czas trwania (${trasaTeraz.czasTrwania})`);return}
 		console.log(JSON.stringify(trasaTeraz))
 		const listaTras=JSON.parse(localStorage.getItem("AgroNotatnik-listaTras")||"[0]")||[0]
 		const nrTrasy=listaTras.length
@@ -1043,6 +1105,56 @@
 	{
 		//
 		localStorage.setItem("AgroNotatnik-nazwyTras",`["Niałek","Smardzewo","Jordanowo","Mdzrz. Wyb.","Międzyrzecz","Templewo","Bledzew","Trzemeszno L.","Lubniewice","Sulęcin","Ośno L.","Baranowo","Kiekrz","Rokietnica","Mrowino","Pamiątkowo","Chludowo","Biedrusko","Kicin","Koziegłowy","Poznań","Czapury","Boszkowo","Bucz","Przemęt","Mochy","Wroniawy","Kębłowo","Obra","Świętno","Kaszczor","Brenno","Wijewo","Grębocice","Jerzmanowa","Nielubia","Bytom Od.","Nowa Sól","Modrzyca","Otyń","Przyborów","Siedlisko","Granowo","Strykowo","Rybojedzko","Opalenica","Wielka Wieś","Grzebienisko","Duszniki","Bytyń","Kaźmierz","Tarnowo","Lusowo","Lusówko","Ołobok","Świebodzin","Lubrza","Brójce","Bukowiec","Trzciel","Pszczew","Łowyń","Przytoczna","Skwierzyna","Krotoszyn","Konarzew","Zduny","Cieszków","Pęcław","Głogów","Ruszowice","Kotla","Krzepielów","Zielona Góra","Świdnica","Leśniów Wielki","Dąbie","Bobrowice","Połupin","Wężyska","Gubin","Jarocin","Wilkowyja","Dobieszczyzna","Gizałki","Broniszewice","Chocz","Janków Drugi","Gołuchów","Gułtowy","Nekla","Przyborki","Psary Pl","Sokołowo","Gutowo M.","Września","Bierzglinek","Pawłowice","Kąkolewo","Krzemieniewo","Gola","Gostyń","Bodzewo","Niedoradz","Racula","Droszków","Zabór","S.Kisielin","Czerwieńsk","Płoty","Przylep","Wilkanowo","Koninko","Kamionki","Robakowo","Bnin","Środa Wlkp","Dominowo","Murzynowo","Sulęcinek","Orzechowo","Chrzan","Żerków","Komorniki","Plewiska","Skórzewo","Zakrzewo","Palędzie","Dopiewo","Konarzewo","Stęszew","Witobel","Mosina","Pecna","Kłoda","Rydzyna","Czernina","Witoszyce","Góra","Kuślin","Wąsowo","Glinno","N. Tomyśl","Przyłęk","Bolewice","Lwówek","Pakosław NT","Pniewy","Podpniewki","Kwilcz","Poniec","Pudliszki","Krobia","Pępowo","Bojadła","Trzebiechów","Sulechów","Kije","Skąpe","Nietkowice","Bytnica","Krosno O.","Marcinowice","Maszewo","Oleśnica","Ligota Wielka","Zbytowa","Stradomia W.","N. Dwór (ol.)","Syców","Twardogóra","Moszyce","Goszcz","Krośnice","Milicz","Sulmierzyce","Raczyce","Odolanów","Granowiec","Sośnie","Międzybórz","Czarnylas","Tarchały W.","Janków P.","Topola Mała","Gorzyce W.","Mikstat","Bukownica","Doruchów","Grabów","Kraszewice","Czajków","Kargowa","Kolesin","Szczaniec","Dąbrówka","Zbąszynek","Babimost","Chobienice","Siedlec (wlkp)","Oborniki Śl.","Ligota Piękna","Trzebnica","Zawonia","Dobroszyce","Bukowice","Sułów","Szkaradowo","Borek Wlkp","Rusko","Siedlemin","Zakrzew","Witaszyce","Kotlin","Czermin","Niechlów","Szlichtyngowa","Jędrzychowice","Wschowa","Sława","Kolsko","Konotop","Lubięcin","Przygodzice","Wysocko W.","Wtórek","Strzyżew","Sieroszewice","Wielowieś","W. Droszewska","Kaliszkowice","Chobienia","Jemielno","Wińsko","Pełczyn (dol)","Skokowa","Prusice","Żmigród","Korzeńsko","Folwark","Wąsosz","Leszno","Lipno","Wilkowice","Krzycko W.","Bukówiec Górny","Włoszakowice","Śmigiel","Nowa Wieś","Widziszewo","S. Bojanowo","Zalasewo","Gowarzewo","Siekierki W.","Paczkowo","Pobiedziska","Kostrzyn","Łagów","Torzym","Rzepin","Kunowice","Cybinka","Kobierno","Orpiszew","Biadki","Łąkociny","Lamki","Ostrów","Przybysławice","Raszków","Ligota (ostr)","Koźminiec","Siedlec (dol)","Wrocław","Kamieniec Wr.","Czernica","Jelcz L.","Stanowice","Siechnice","Św Katarzyna","Dziadowa Kłoda","Perzów","Kobyla Góra","Rojów","Rogaszyce","Olszyna","Ostrzeszów","Siedlików","Miłosław","Kołaczkowo","Sokolniki","Ciążeń","Lądek","Zagórów","Pyzdry","Komorze P.","Krzywiń","Bielewo","Bieżyń","Jerka","Turew","Czempiń","S. Oborzyska","N. Lubosz","Racot","Kościan","Sobótka (wlkp)","Lewków","Biskupice O.","Skalmierzyce","Kalisz","Wilkowo Pl","Wielichowo","Łubnica","Rakoniewice","Łąkie","Rostarzewo","Adamowo","Wolsztyn","Piaski","Jaraczewo","Chwałkowo","Książ","Chocicza","N. M. Nad Wartą","Klęka","Mieszków","Cielcza","Tuchorza","Belęcin","Przyprostynia","Zbąszyń","Paproć","Boruja K.","Jabłonna","Wydawy","Słupia K.","Chojno","Pakosław Raw","Nowy Sielec","Jutrosin","Smolice","Kobylin","Golina","Borzęcice","Dobrzyca","Kowalew","Pleszew","Pogorzela","Borzęciczki","Koźmin Wlkp","Rozdrażew","Benice","Dąbcze","Strzyżewice","Osieczna","Świerczyna","Brodnica","Śrem","Nochowo","Dolsk","Kunowo","Sierakowo","Kiełczewo","Maksymilianowo","Kamieniec","Grodzisk","Golina Wielka","Bojanowo","Rawicz","Sarnowa","Miejska Górka","Konary","Niepart","Skoraszewice","Długołęka"]`)
+	}
+	function edytujTrase(nrTrasy)
+	{
+		if (!funkcjeCzasu.poprawnaData(edytowanaTrasa.czasKoniec)){return}
+		const poprzedniCzasTrwania=edytowanaTrasa.czasTrwania
+		edytowanaTrasa.czasTrwania=funkcjeCzasu.roznicaCzasu(edytowanaTrasa.czasStart,edytowanaTrasa.czasKoniec)
+		if (edytowanaTrasa.czasTrwania<30 || edytowanaTrasa.czasTrwania>1020){alert(`wkradł się jakiś błąd. Czas trwania kursu jest zbyt krótki lub zbyt długi.`);console.log(`zbyt krótki lub zbyt długi czas trwania (${edytowanaTrasa.czasTrwania})`);return}
+		console.log(JSON.stringify(edytowanaTrasa))
+		localStorage.setItem("AgroNotatnik-trasaNr-"+nrTrasy,JSON.stringify(edytowanaTrasa))
+		//
+		const listaTras=JSON.parse(localStorage.getItem("AgroNotatnik-listaTras")||"[0]")||[0]
+		listaTras[nrTrasy]=[edytowanaTrasa.nazwa,edytowanaTrasa.czasStart[1],edytowanaTrasa.czasTrwania]
+		if (listaTras.length>3)
+		{
+			listaTras[0]=srednia(listaTras,2)
+		}
+		localStorage.setItem("AgroNotatnik-listaTras",JSON.stringify(listaTras))
+		//
+		const miesiace=JSON.parse(localStorage.getItem("AgroNotatnik-miesiace")||"[]")||[]
+		if (!Array.isArray(miesiace[edytowanaTrasa.czasStart[1][2]-2022]))
+		{
+			miesiace[edytowanaTrasa.czasStart[1][2]-2022]=[]
+		}
+		if (!Array.isArray(miesiace[edytowanaTrasa.czasStart[1][2]-2022][edytowanaTrasa.czasStart[1][1]]))
+		{
+			miesiace[edytowanaTrasa.czasStart[1][2]-2022][edytowanaTrasa.czasStart[1][1]]=[]
+		}
+		const tenMiesiac=miesiace[edytowanaTrasa.czasStart[1][2]-2022][edytowanaTrasa.czasStart[1][1]]
+		for (let a=0 ; a<(tenMiesiac||[]).length ; a++)
+		{
+			if (tenMiesiac[a]==Math.round(poprzedniCzasTrwania/15))
+			{
+				tenMiesiac[a]=Math.round(edytowanaTrasa.czasTrwania/15)
+			}
+		}
+		localStorage.setItem("AgroNotatnik-miesiace",JSON.stringify(miesiace))
+		//
+		let trasa=JSON.parse(localStorage.getItem("AgroNotatnik-trasa-"+(edytowanaTrasa.nazwa||"?"))||"0")
+		if (!trasa)
+		{
+			console.log("to niemożliwe. wystąpił błąd (S44)")
+			return ekran.menuGlowne()
+		}
+		if (trasa[2].length>2)
+		{
+			trasa[1]=srednia(trasa[2],1)
+		}
+		localStorage.setItem("AgroNotatnik-trasa-"+trasaTeraz.nazwa,JSON.stringify(trasa))
+		//
+		ekran.menuGlowne()
 	}
 </script>
 <body onload="ekran.menuGlowne()">
