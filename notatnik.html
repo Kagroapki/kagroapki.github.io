@@ -920,7 +920,10 @@
 					break
 				}
 			}
-			nNazwyTras.push(nazwyTras[a])
+			if (i)
+			{
+				nNazwyTras.push(nazwyTras[a])
+			}
 		}
 		nazwyTras=nNazwyTras
 		localStorage.setItem("AgroNotatnik-nazwyTras",JSON.stringify(nazwyTras))
