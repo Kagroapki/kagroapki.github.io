@@ -199,8 +199,8 @@
 			przedzial.className="przedzial"
 			let element=document.createElement("div")
 			element.className="guzikPlusMinus"
-			element.innerHTML="+"
-			element.onclick = new Function(`${nazwa}=funkcjeCzasu.dodajDzien(${nazwa});${aktualizuj}`)
+			element.innerHTML="-"
+			element.onclick = new Function(`${nazwa}=funkcjeCzasu.odejmijDzien(${nazwa});${aktualizuj}`)
 			przedzial.appendChild(element)
 			//
 			element=document.createElement("div")
@@ -210,8 +210,8 @@
 			//
 			element=document.createElement("div")
 			element.className="guzikPlusMinus"
-			element.innerHTML="-"
-			element.onclick = new Function(`${nazwa}=funkcjeCzasu.odejmijDzien(${nazwa});${aktualizuj}`)
+			element.innerHTML="+"
+			element.onclick = new Function(`${nazwa}=funkcjeCzasu.dodajDzen(${nazwa});${aktualizuj}`)
 			przedzial.appendChild(element)
 			element=document.createElement("div")
 			element.style.clear="both"
@@ -223,19 +223,8 @@
 			//
 			element=document.createElement("div")
 			element.className="guzikPlusMinus"
-			element.innerHTML="+"
-			element.onclick = new Function(`${nazwa}=funkcjeCzasu.dodajMinuty(60,${nazwa});${aktualizuj};${nazwa}[2]=1`)
-			przedzial.appendChild(element)
-			//
-			element=document.createElement("div")
-			element.className="guzikPlusMinus"
-			element.innerHTML="+"
-			element.onclick = new Function(`${nazwa}=funkcjeCzasu.dodajMinuty(5,${nazwa});${aktualizuj};${nazwa}[2]=1`)
-			przedzial.appendChild(element)
-			//
-			element=document.createElement("div")
-			element.id=`${nazwa}Div2`
-			element.className="wartosc wartoscMala"
+			element.innerHTML="-"
+			element.onclick = new Function(`${nazwa}=funkcjeCzasu.dodajMinuty(-60,${nazwa});${aktualizuj};${nazwa}[2]=1`)
 			przedzial.appendChild(element)
 			//
 			element=document.createElement("div")
@@ -245,9 +234,20 @@
 			przedzial.appendChild(element)
 			//
 			element=document.createElement("div")
+			element.id=`${nazwa}Div2`
+			element.className="wartosc wartoscMala"
+			przedzial.appendChild(element)
+			//
+			element=document.createElement("div")
 			element.className="guzikPlusMinus"
-			element.innerHTML="-"
-			element.onclick = new Function(`${nazwa}=funkcjeCzasu.dodajMinuty(-60,${nazwa});${aktualizuj};${nazwa}[2]=1`)
+			element.innerHTML="+"
+			element.onclick = new Function(`${nazwa}=funkcjeCzasu.dodajMinuty(5,${nazwa});${aktualizuj};${nazwa}[2]=1`)
+			przedzial.appendChild(element)
+			//
+			element=document.createElement("div")
+			element.className="guzikPlusMinus"
+			element.innerHTML="+"
+			element.onclick = new Function(`${nazwa}=funkcjeCzasu.dodajMinuty(60,${nazwa});${aktualizuj};${nazwa}[2]=1`)
 			przedzial.appendChild(element)
 			element=document.createElement("div")
 			element.style.clear="both"
@@ -891,7 +891,7 @@
 
 		const nazwa=document.getElementById("poleSzukaj").value
 		setTimeout(()=>{document.getElementById("poleSzukaj").value=nazwa},1)
-		const nazwyTras=JSON.parse(localStorage.getItem("AgroNotatnik-nazwyTras")||"0")
+		let nazwyTras=JSON.parse(localStorage.getItem("AgroNotatnik-nazwyTras")||"0")
 		if (!nazwyTras)
 		{
 			domyslneNazwyTras()
