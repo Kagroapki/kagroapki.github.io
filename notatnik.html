@@ -386,7 +386,7 @@
 				{
 					element=document.createElement("div")
 					element.className="wartosc wartoscDuza"
-					element.innerHTML=`${listaTras[a][1][0]}.${listaTras[a][1][1]} ${listaTras[a][0]} w ${Math.floor(listaTras[a][2]/30)/2}h`
+					element.innerHTML=`${dodajZero(listaTras[a][1][0])}.${dodajZero(listaTras[a][1][1])} ${listaTras[a][0]} w ${Math.floor(listaTras[a][2]/30)/2}h`
 					element.onclick = new Function(`ekran.trasa(${a})`)
 					t.appendChild(element)
 				}
@@ -499,7 +499,14 @@
 				}
 				else
 				{
-					element.innerHTML=`${trasy[1][a][2]} na ${trasy[1][a][0]} ${Math.round(trasy[1][a][1]*2)/2}h `
+					if (trasy[1][a][1]>1)
+					{
+						element.innerHTML=`${trasy[1][a][2]} na ${trasy[1][a][0]} ${Math.round(trasy[1][a][1]*2)/2}h `
+					}
+					else
+					{
+						element.innerHTML=`${trasy[1][a][2]} na ${trasy[1][a][0]} `
+					}
 				}
 				t.appendChild(element)
 			}
@@ -900,6 +907,23 @@
 			wyszukaneTrasy=[]
 			return
 		}
+		//usuwanie duplikatów
+		for (let a=0 ; a<nazwyTras.length ; a++)
+		{
+			let i=1
+			for (let b=0 ; b<a ; b++)
+			{
+				if (nazwyTras[a]==nazwyTras[b])
+				{
+					i=0
+					break
+				}
+			}
+			nNazwyTras.push(nazwyTras[a])
+		}
+		nazwyTras=nNazwyTras
+		localStorage.setItem("AgroNotatnik-nazwyTras",JSON.stringify(nazwyTras))
+		//
 		const t=[[],[],[]]
 		for (let a=0 ; a<nazwyTras.length ; a++)
 		{
@@ -1155,6 +1179,12 @@
 		localStorage.setItem("AgroNotatnik-trasa-"+trasaTeraz.nazwa,JSON.stringify(trasa))
 		//
 		ekran.menuGlowne()
+	}
+	function dodajZero(liczba)
+	{
+		liczba=`${Number(liczba||0)||0}`
+		if (liczba.length<2){return `0${liczba}`}
+		return liczba
 	}
 </script>
 <body onload="ekran.menuGlowne()">
