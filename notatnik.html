@@ -1103,31 +1103,24 @@
 	function srednia(lista,e)
 	{
 		const g=[]
-		let suma=0
-		let wagi=0
 		for (let a=0 ; a<lista.length ; a++)
 		{
 			if (!lista[a] || typeof lista[a]!="object"){continue}
-			const waga=(51-a)
-			g[Math.ceil(lista[a][e]/30)*4]=(g[Math.ceil(lista[a][e]/30)*4]||0)+1
-			suma+=Math.ceil(lista[a][e]/15)*waga
-			wagi+=waga
+			g[Math.round(lista[a][e]/15)]=(g[Math.round(lista[a][e]/15)]||0)+1
 		}
-		suma=suma/wagi
-		const max=[0,0]
+		let suma=0
+		let wagi=0
 		for (let a=0 ; a<g.length ; a++)
 		{
-			if (g[a]>max[1])
+			if (g[a])
 			{
-				max[1]=g[a]
-				max[0]=a
+				const waga=Math.pow(g[a],2)
+				suma+=a*waga
+				wagi+=waga
 			}
 		}
-		if (max[0]>0)
-		{
-			suma=((suma*2)+max[0])/3
-		}
-		return Math.ceil(suma)/4
+		suma=suma/wagi
+		return Math.round(suma)/4
 	}
 	function domyslneNazwyTras()
 	{
