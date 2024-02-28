@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>skrzynki</title>
+<meta charset="utf-8" />
+<style type="text/css">
+	*
+	{
+		padding: 0;
+		margin: 0;
+		font-size: 2.5vh;
+		background: rgba(0,0,0,0);
+		color: white;
+	}
+	body
+	{
+		background: #070707;
+		font-family: ariel;
+	}
+	#glowny
+	{
+		position: relative;
+		top: 1vh;
+		width: 42vh;
+		min-height: 80vh;
+		left: 50%;
+		margin-left: -21vh;
+		background: black;
+	}
+	.guzikPol
+	{
+		width: 20vh;
+		height: 4vh;
+		margin: 0.5vh;
+		background: #252525;
+		float: left;
+		text-align: center;
+		color: white;
+	}
+	.guzik
+	{
+		width: 40vh;
+		height: 4vh;
+		margin: 0.5vh;
+		margin-left: 1vh;
+		background: #252525;
+		text-align: center;
+		color: white;
+	}
+	.pojemnik
+	{
+		float: left;
+		min-width: 1.6vh;
+		height: 5vh;
+		margin: 0.1vh;
+		border-radius: 0.5vh;
+		background: black;
+	}
+	.sklep
+	{
+		width: 100%;
+		margin-top: 0.5vh;
+		padding-top: 0.5vh;
+		padding-bottom: 0.5vh;
+		background: #252525;
+	}
+	.stopa
+	{
+		height: 20vh;
+	}
+	#wynik
+	{
+		position: fixed;
+		bottom: 5vh;
+		right: 5vh;
+		width: 14vh;
+		height: 14vh;
+		background: rgba(0,0,0,0.7);
+		opacity: 0.7;
+		color: white;
+	}
+</style>
+<script type="text/javascript">
+	const dane=JSON.parse(localStorage.getItem("AgroSkrzynki-dane")||"[]")||[]
+	const teraz=JSON.parse(localStorage.getItem("AgroSkrzynki-teraz")||"[[[0,0,0,0]],[0,0,0,0]]")||[[[0,0,0,0]],[0,0,0,0]]
+	let test=77
+	const ekran=
+	{
+		paka:function()
+		{
+			document.getElementById("glowny").innerHTML=""
+			if (true)
+			{
+				const div=document.createElement("div")
+				div.style.height=`5.5vh`
+				for (let a=0 ; a<2 ; a++)
+				{
+					let guzikPol=document.createElement("div")
+					guzikPol.className="guzikPol"
+					if (a==1){guzikPol.style.background="#393939"}
+					guzikPol.innerHTML=["papiery","paka"][a]
+					guzikPol.onclick = new Function(["ekran.papiery()","ekran.paka()"][a])
+					div.appendChild(guzikPol)
+				}
+				document.getElementById("glowny").appendChild(div)
+			}
+			document.getElementById("glowny").appendChild(ekran.napis("drób"))
+			document.getElementById("glowny").appendChild(ekran.pasek("#ed0000",10,25,"teraz[1][0]","pakaDrob"))
+			document.getElementById("glowny").appendChild(ekran.napis("mięso"))
+			document.getElementById("glowny").appendChild(ekran.pasek("#fff79d",20,15,"teraz[1][1]","pakaMieso"))
+			document.getElementById("glowny").appendChild(ekran.napis("wędliny"))
+			document.getElementById("glowny").appendChild(ekran.pasek("#9de3f7",15,15,"teraz[1][2]","pakaWedliny"))
+			document.getElementById("glowny").appendChild(ekran.napis("pokrywy"))
+			document.getElementById("glowny").appendChild(ekran.pasek("#b1c5f7",10,5,"teraz[1][3]","pakaPokrywy"))
+			//
+			const stopa=document.createElement("div")
+			stopa.className="stopa"
+			document.getElementById("glowny").appendChild(stopa)
+		},
+		papiery:function()
+		{
+			document.getElementById("glowny").innerHTML=""
+			if (true)
+			{
+				const div=document.createElement("div")
+				div.style.height=`5.5vh`
+				for (let a=0 ; a<2 ; a++)
+				{
+					let guzikPol=document.createElement("div")
+					guzikPol.className="guzikPol"
+					if (a==0){guzikPol.style.background="#393939"}
+					guzikPol.innerHTML=["papiery","paka"][a]
+					guzikPol.onclick = new Function(["ekran.papiery()","ekran.paka()"][a])
+					div.appendChild(guzikPol)
+				}
+				document.getElementById("glowny").appendChild(div)
+			}
+			for (let a=0 ; a<teraz[0].length ; a++)
+			{
+				const div=document.createElement("div")
+				div.className="sklep"
+				div.appendChild(ekran.napis("drób"))
+				div.appendChild(ekran.pasek("#ed0000",10,5,`teraz[0][${a}][0]`,`papieryDrob${a}`))
+				div.appendChild(ekran.napis("mięso"))
+				div.appendChild(ekran.pasek("#fff79d",10,5,`teraz[0][${a}][1]`,`papieryMieso${a}`))
+				div.appendChild(ekran.napis("wędliny"))
+				div.appendChild(ekran.pasek("#9de3f7",10,5,`teraz[0][${a}][2]`,`papieryWedliny${a}`))
+				div.appendChild(ekran.napis("pokrywy"))
+				div.appendChild(ekran.pasek("#b1c5f7",10,5,`teraz[0][${a}][3]`,`papieryPokrywy${a}`))
+				document.getElementById("glowny").appendChild(div)
+			}
+			const guzik=document.createElement("div")
+			guzik.className="guzik"
+			guzik.innerHTML="dodaj papier"
+			guzik.style.background="#2c4d00"
+			guzik.onclick = new Function(`teraz[0].push([0,0,0,0]);ekran.papiery()`)
+			document.getElementById("glowny").appendChild(guzik)
+			const stopa=document.createElement("div")
+			stopa.className="stopa"
+			document.getElementById("glowny").appendChild(stopa)
+		},
+		statystyki:function()
+		{
+			//
+		},
+		rozpiska:function()
+		{
+			//
+		},
+		pasek:function(kolor,mnoznik1,mnoznik2,adres,id)
+		{
+			let c = new Function(`return ${adres}`)()
+			let pasy=Math.max(1,Math.ceil(mnoznik1/10),Math.ceil(mnoznik2/5))
+			const div=[document.createElement("div"),document.createElement("div"),document.createElement("div"),document.createElement("div"),document.createElement("div")]
+			div[0].style.width="42vh"
+			div[0].style.height=`${pasy*(5+0.1+0.2)}vh`
+			div[0].id=id
+			for (let a=1 ; a<4 ; a++)
+			{
+				div[a].style.float="left"
+				div[a].style.padding="0.1vh"
+				div[a].style.height=`${pasy*(5+0.1+0.2)}vh`
+				div[a].style.width=`${[0,18,5.4,18,0][a]}vh`
+				div[0].appendChild(div[a])
+			}
+			div[4].style.height="4vh"
+			div[4].style.position="relative"
+			div[4].style.textAlign="center"
+			div[4].style.width="5.4vh"
+			div[4].style.top=`${((pasy*(5+0.1+0.2))-4)/2}vh`
+			div[4].innerHTML=c
+			div[2].appendChild(div[4])
+			const f=`document.getElementById("${id}").innerHTML="";const c=ekran.pasek("${kolor}",${mnoznik1},${mnoznik2},"${adres}","${id}").children;const d=c.length;for(let a=0 ; a<d ; a++){document.getElementById("${id}").appendChild(c[0])};localStorage.setItem("AgroSkrzynki-teraz",JSON.stringify(teraz));wynik()`
+			for (let a=0 ; a<mnoznik2 ; a++)
+			{
+				const pojemnik=document.createElement("div")
+				pojemnik.className="pojemnik"
+				pojemnik.style.float="left"
+				pojemnik.style.width=`${3.4}vh`
+				if (a==mnoznik2-1)
+				{
+					pojemnik.style.background="#9307f7"
+					pojemnik.onclick = new Function(`${adres}=(${adres}%${mnoznik1});${f}`)
+				}
+				else
+				{
+					pojemnik.style.background=kolor
+					if (c<mnoznik1)
+					{
+						pojemnik.style.opacity=0.5
+					}
+					else
+					{
+						c-=mnoznik1
+					}
+					pojemnik.onclick = new Function(`${adres}=(${adres}%${mnoznik1})+${(a+1)*mnoznik1};${f}`)
+				}
+				div[3].appendChild(pojemnik)
+			}
+			for (let a=0 ; a<mnoznik1 ; a++)
+			{
+				const pojemnik=document.createElement("div")
+				pojemnik.className="pojemnik"
+				pojemnik.style.float="right"
+				pojemnik.style.width=`${1.6}vh`
+				if (a==mnoznik1-1)
+				{
+					pojemnik.style.background="#9307f7"
+					pojemnik.onclick = new Function(`${adres}=(Math.floor(${adres}/${mnoznik1})*${mnoznik1});${f}`)
+				}
+				else
+				{
+					pojemnik.style.background=kolor
+					if (c<1)
+					{
+						pojemnik.style.opacity=0.5
+					}
+					else
+					{
+						c--
+					}
+					pojemnik.onclick = new Function(`${adres}=(Math.floor(${adres}/${mnoznik1})*${mnoznik1})+${(a+1)};${f}`)
+				}
+				div[1].appendChild(pojemnik)
+			}
+			return div[0]
+		},
+		napis:function(tresc)
+		{
+			const div=document.createElement("div")
+			div.innerHTML=tresc
+			return div
+		}
+	}
+	function wynik()
+	{
+		const c=[0,0,0,0]
+		for (let a=0 ; a<teraz[0].length ; a++)
+		{
+			for (let b=0 ; b<4 ; b++)
+			{
+				c[b]+=teraz[0][a][b]||0
+			}
+		}
+		document.getElementById("wynik").innerHTML=""
+		for (let a=0 ; a<4 ; a++)
+		{
+			const div=document.createElement("div")
+			div.innerHTML=`${c[a]}`
+			if (c[a]==teraz[1][a])
+			{
+				div.style.color="#aaf700"
+			}
+			else if (c[a]>teraz[1][a])
+			{
+				div.style.color="#f73925"
+			}
+			else
+			{
+				div.style.color="#f7e34d"
+			}
+			div.style.position="absolute"
+			div.style[["top","bottom","top","bottom"][a]]="1.5vh"
+			div.style[["left","left","right","right"][a]]="1.5vh"
+			document.getElementById("wynik").appendChild(div)
+		}
+	}
+</script>
+<body onload="ekran.paka()">
+	<div id="glowny"></div>
+	<div id="wynik"></div>
+</body>
+</html>
