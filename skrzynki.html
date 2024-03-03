@@ -59,9 +59,9 @@
 	.sklep
 	{
 		width: 100%;
-		margin-top: 0.5vh;
-		padding-top: 0.5vh;
-		padding-bottom: 0.5vh;
+		margin-top: 1vh;
+		padding-top: 1.5vh;
+		padding-bottom: 1.5vh;
 		background: #252525;
 	}
 	.stopa
@@ -73,11 +73,46 @@
 		position: fixed;
 		bottom: 5vh;
 		right: 5vh;
-		width: 14vh;
-		height: 14vh;
-		background: rgba(0,0,0,0.7);
-		opacity: 0.7;
+		width: 20vh;
+		height: 17vh;
+		background: rgba(7,7,7,0.8);
+		border-radius: 2vh;
 		color: white;
+		font-weight: 700;
+	}
+	#rozpiska
+	{
+		position: fixed;
+		bottom: 5vh;
+		left: 5vh;
+		width: 5vh;
+		height: 5vh;
+		background: rgba(17,97,0,0.8);
+		border-radius: 1.5vh;
+	}
+	#pytanie
+	{
+		box-sizing: border-box;
+		position: fixed;
+		top: 20vh;
+		margin-top: -77vh;
+		left: 50%;
+		margin-left: -22vh;
+		width: 44vh;
+		height: 44vh;
+		padding: 0.5vh;
+		background: rgba(17,17,17,0.9);
+		border: solid 0.4vh white;
+		border-radius: 1vh;
+		color: white;
+		font-weight: 700;
+	}
+	.pasek
+	{
+		position: relative;
+		width: 100%;
+		height: 4vh;
+		margin-top: 0.5vh;
 	}
 </style>
 <script type="text/javascript">
@@ -105,13 +140,13 @@
 				document.getElementById("glowny").appendChild(div)
 			}
 			document.getElementById("glowny").appendChild(ekran.napis("drób"))
-			document.getElementById("glowny").appendChild(ekran.pasek("#ed0000",10,25,"teraz[1][0]","pakaDrob"))
+			document.getElementById("glowny").appendChild(ekran.pasek("#ed0000",10,24,"teraz[1][0]","pakaDrob"))
 			document.getElementById("glowny").appendChild(ekran.napis("mięso"))
 			document.getElementById("glowny").appendChild(ekran.pasek("#fff79d",20,15,"teraz[1][1]","pakaMieso"))
 			document.getElementById("glowny").appendChild(ekran.napis("wędliny"))
-			document.getElementById("glowny").appendChild(ekran.pasek("#9de3f7",15,15,"teraz[1][2]","pakaWedliny"))
+			document.getElementById("glowny").appendChild(ekran.pasek("#9de3f7",15,12,"teraz[1][2]","pakaWedliny"))
 			document.getElementById("glowny").appendChild(ekran.napis("pokrywy"))
-			document.getElementById("glowny").appendChild(ekran.pasek("#b1c5f7",10,5,"teraz[1][3]","pakaPokrywy"))
+			document.getElementById("glowny").appendChild(ekran.pasek("#b1c5f7",10,6,"teraz[1][3]","pakaPokrywy"))
 			//
 			const stopa=document.createElement("div")
 			stopa.className="stopa"
@@ -139,14 +174,17 @@
 			{
 				const div=document.createElement("div")
 				div.className="sklep"
+				const nr=div.appendChild(ekran.napis(`#${a+1} &nbsp; `))
+				nr.style.float="right"
+				div.appendChild(nr)
 				div.appendChild(ekran.napis("drób"))
-				div.appendChild(ekran.pasek("#ed0000",10,5,`teraz[0][${a}][0]`,`papieryDrob${a}`))
+				div.appendChild(ekran.pasek("#ed0000",10,6,`teraz[0][${a}][0]`,`papieryDrob${a}`))
 				div.appendChild(ekran.napis("mięso"))
-				div.appendChild(ekran.pasek("#fff79d",10,5,`teraz[0][${a}][1]`,`papieryMieso${a}`))
+				div.appendChild(ekran.pasek("#fff79d",10,6,`teraz[0][${a}][1]`,`papieryMieso${a}`))
 				div.appendChild(ekran.napis("wędliny"))
-				div.appendChild(ekran.pasek("#9de3f7",10,5,`teraz[0][${a}][2]`,`papieryWedliny${a}`))
+				div.appendChild(ekran.pasek("#9de3f7",10,6,`teraz[0][${a}][2]`,`papieryWedliny${a}`))
 				div.appendChild(ekran.napis("pokrywy"))
-				div.appendChild(ekran.pasek("#b1c5f7",10,5,`teraz[0][${a}][3]`,`papieryPokrywy${a}`))
+				div.appendChild(ekran.pasek("#b1c5f7",10,6,`teraz[0][${a}][3]`,`papieryPokrywy${a}`))
 				document.getElementById("glowny").appendChild(div)
 			}
 			const guzik=document.createElement("div")
@@ -159,18 +197,117 @@
 			stopa.className="stopa"
 			document.getElementById("glowny").appendChild(stopa)
 		},
-		statystyki:function()
-		{
-			//
-		},
 		rozpiska:function()
 		{
-			//
+			document.getElementById("glowny").innerHTML=""
+			if (true)
+			{
+				const div=document.createElement("div")
+				div.style.height=`5.5vh`
+				for (let a=0 ; a<2 ; a++)
+				{
+					let guzikPol=document.createElement("div")
+					guzikPol.className="guzikPol"
+					guzikPol.innerHTML=["papiery","paka"][a]
+					guzikPol.onclick = new Function(["ekran.papiery()","ekran.paka()"][a])
+					div.appendChild(guzikPol)
+				}
+				document.getElementById("glowny").appendChild(div)
+			}
+			for (let a=0 ; a<dane.length ; a++)
+			{
+				const c=[0,0,0,0]
+				for (let b=0 ; b<dane[a][1].length ; b++)
+				{
+					for (let d=0 ; d<4 ; d++)
+					{
+						c[d]+=dane[a][1][b][d]
+					}
+				}
+				const pasek=document.createElement("div")
+				pasek.className="pasek"
+				const r=[0,0]
+				for (let b=0 ; b<4 ; b++)
+				{
+					const slupek=document.createElement("div")
+					slupek.style.position="absolute"
+					slupek.style.background=["#ed0000","#fff79d","#9de3f7","#b1c5f7"][b]
+					slupek.style[["right","left","right","left"][b]]=`${50+(r[b%2])}%`
+					r[b%2]+=(50*(c[b]/393))
+					slupek.style.width=`${(50*(c[b]/393))}%`
+					slupek.style.height="100%"
+					pasek.appendChild(slupek)
+				}
+				const napis=document.createElement("div")
+				napis.style.position="absolute"
+				napis.style.boxSizing="border-box"
+				napis.style.width="100%"
+				napis.style.height="100%"
+				napis.style.padding="0.5vh"
+				napis.style.textAlign="center"
+				napis.style.background="rgba(0,0,0,0.5)"
+				napis.innerHTML=funkcjeCzasu.pokazDate(dane[a][0])
+				pasek.appendChild(napis)
+				pasek.onclick = new Function(`ekran.szczegoly(${a})`)
+				document.getElementById("glowny").appendChild(pasek)
+			}
+		},
+		szczegoly:function(nr)
+		{
+			document.getElementById("glowny").innerHTML=""
+			if (true)
+			{
+				const div=document.createElement("div")
+				div.style.height=`5.5vh`
+				for (let a=0 ; a<2 ; a++)
+				{
+					let guzikPol=document.createElement("div")
+					guzikPol.className="guzikPol"
+					guzikPol.innerHTML=["papiery","paka"][a]
+					guzikPol.onclick = new Function(["ekran.papiery()","ekran.paka()"][a])
+					div.appendChild(guzikPol)
+				}
+				document.getElementById("glowny").appendChild(div)
+			}
+			let s=document.createElement("div")
+			s.innerHTML=`dane zapisane dnia ${funkcjeCzasu.pokazDate(dane[nr][0])}<br>`
+			for (let a=0 ; a<dane[nr][1].length ; a++)
+			{
+				s.innerHTML+=`#${a+1}<br>`
+				for (let b=0 ; b<4 ; b++)
+				{
+					s.innerHTML+=` &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;${"DMWP"[b]}: ${dane[nr][1][a][b]}<br>`
+				}
+			}
+			document.getElementById("glowny").appendChild(s)
+		},
+		pytanie:function(z,q)
+		{
+			const c=document.getElementById("pytanie")
+			c.innerHTML=""
+			if (q)
+			{
+				c.style.marginTop="-77vh"
+			}
+			else
+			{
+				c.style.marginTop="0"
+				if (z)
+				{
+					c.appendChild(ekran.guzik("ZAPISZ","#616100",`zapisz()`))
+				}
+				c.appendChild(ekran.guzik("WYCZYŚĆ","#6b1100",`wyczysc();ekran.pytanie(0,1)`))
+				const guzik=ekran.guzik("NIE RÓB NIC","#396b00",`ekran.pytanie(0,1)`)
+				guzik.style.position="absolute"
+				guzik.style.height="5vh"
+				guzik.style.bottom="7vh"
+				c.appendChild(guzik)
+			}
 		},
 		pasek:function(kolor,mnoznik1,mnoznik2,adres,id)
 		{
 			let c = new Function(`return ${adres}`)()
-			let pasy=Math.max(1,Math.ceil(mnoznik1/10),Math.ceil(mnoznik2/5))
+			let pasy=Math.max(1,Math.ceil(mnoznik1/5),Math.ceil(mnoznik2/3))
 			const div=[document.createElement("div"),document.createElement("div"),document.createElement("div"),document.createElement("div"),document.createElement("div")]
 			div[0].style.width="42vh"
 			div[0].style.height=`${pasy*(5+0.1+0.2)}vh`
@@ -195,8 +332,8 @@
 			{
 				const pojemnik=document.createElement("div")
 				pojemnik.className="pojemnik"
-				pojemnik.style.float="left"
-				pojemnik.style.width=`${3.4}vh`
+				pojemnik.style.float="right"
+				pojemnik.style.width=`${5.6}vh`
 				if (a==mnoznik2-1)
 				{
 					pojemnik.style.background="#9307f7"
@@ -207,7 +344,7 @@
 					pojemnik.style.background=kolor
 					if (c<mnoznik1)
 					{
-						pojemnik.style.opacity=0.5
+						pojemnik.style.opacity=0.4
 					}
 					else
 					{
@@ -215,14 +352,14 @@
 					}
 					pojemnik.onclick = new Function(`${adres}=(${adres}%${mnoznik1})+${(a+1)*mnoznik1};${f}`)
 				}
-				div[3].appendChild(pojemnik)
+				div[1].appendChild(pojemnik)
 			}
 			for (let a=0 ; a<mnoznik1 ; a++)
 			{
 				const pojemnik=document.createElement("div")
 				pojemnik.className="pojemnik"
-				pojemnik.style.float="right"
-				pojemnik.style.width=`${1.6}vh`
+				pojemnik.style.float="left"
+				pojemnik.style.width=`${3.4}vh`
 				if (a==mnoznik1-1)
 				{
 					pojemnik.style.background="#9307f7"
@@ -233,7 +370,7 @@
 					pojemnik.style.background=kolor
 					if (c<1)
 					{
-						pojemnik.style.opacity=0.5
+						pojemnik.style.opacity=0.4
 					}
 					else
 					{
@@ -241,7 +378,7 @@
 					}
 					pojemnik.onclick = new Function(`${adres}=(Math.floor(${adres}/${mnoznik1})*${mnoznik1})+${(a+1)};${f}`)
 				}
-				div[1].appendChild(pojemnik)
+				div[3].appendChild(pojemnik)
 			}
 			return div[0]
 		},
@@ -250,11 +387,53 @@
 			const div=document.createElement("div")
 			div.innerHTML=tresc
 			return div
+		},
+		guzik:function(tresc,kolor,funkcja)
+		{
+			const guzik=document.createElement("div")
+			guzik.className="guzik"
+			guzik.style.background=kolor||"white"
+			guzik.innerHTML=tresc
+			guzik.onclick = new Function(funkcja)
+			return guzik
 		}
+	}
+	setTimeout(()=>{document.getElementById("rozpiska").onclick=ekran.rozpiska},500)
+	funkcjeCzasu=
+	{
+		aktualnaData:function()
+		{
+			const teraz = new Date()
+			return [teraz.getDate(),teraz.getMonth()+1,teraz.getFullYear()]
+		},
+		pokazDate:function(data)
+		{
+			data=JSON.parse(JSON.stringify(data||funkcjeCzasu.aktualnaData()))
+			data=[`${data[0]}`,`${data[1]}`,`${data[2]}`]
+			if(data[0].length<2){data[0]=`0${data[0]}`}
+			if(data[1].length<2){data[1]=`0${data[1]}`}
+			return `${data[0]}.${data[1]}.${data[2]}r`
+		},
+	}
+	function wyczysc()
+	{
+		teraz[0]=[[0,0,0,0]]
+		teraz[1]=[0,0,0,0]
+		wynik()
+		ekran.paka()
+		localStorage.setItem("AgroSkrzynki-teraz","[[[0,0,0,0]],[0,0,0,0]]")
+	}
+	function zapisz()
+	{
+		dane.unshift([funkcjeCzasu.aktualnaData(),teraz[0]])
+		localStorage.setItem("AgroSkrzynki-dane",JSON.stringify(dane.slice(0,42)))
+		wyczysc()
+		ekran.pytanie(0,1)
 	}
 	function wynik()
 	{
 		const c=[0,0,0,0]
+		let z=-1
 		for (let a=0 ; a<teraz[0].length ; a++)
 		{
 			for (let b=0 ; b<4 ; b++)
@@ -266,22 +445,31 @@
 		for (let a=0 ; a<4 ; a++)
 		{
 			const div=document.createElement("div")
-			div.innerHTML=`${c[a]}`
-			if (c[a]==teraz[1][a])
+			div.innerHTML=`<span style="color:#616161">${"DMWP"[a]} </span>${c[a]}`
+			if (c[a]>0 && c[a]==teraz[1][a])
 			{
 				div.style.color="#aaf700"
+				if (z==-1){z=1}
 			}
 			else if (c[a]>teraz[1][a])
 			{
 				div.style.color="#f73925"
+				z=0
+			}
+			else if (c[a]>0)
+			{
+				div.style.color="#f7e34d"
+				z=0
 			}
 			else
 			{
-				div.style.color="#f7e34d"
+				div.style.color="black"
+				z=0
 			}
 			div.style.position="absolute"
 			div.style[["top","bottom","top","bottom"][a]]="1.5vh"
-			div.style[["left","left","right","right"][a]]="1.5vh"
+			div.style.left=`${[1,1,11,11][a]}vh`
+			document.getElementById("wynik").onclick = new Function(`ekran.pytanie(${z})`)
 			document.getElementById("wynik").appendChild(div)
 		}
 	}
@@ -289,5 +477,7 @@
 <body onload="ekran.paka()">
 	<div id="glowny"></div>
 	<div id="wynik"></div>
+	<div id="rozpiska"></div>
+	<div id="pytanie"></div>
 </body>
 </html>
