@@ -271,7 +271,7 @@
 			}
 			let s=document.createElement("div")
 			s.innerHTML=`dane zapisane dnia ${funkcjeCzasu.pokazDate(dane[nr][0])}<br>`
-			s.innerHTML=`suma: D:${c[0]} M:${c[1]} W:${c[2]} P:${c[3]}<br>`
+			s.innerHTML+=`suma: D:${c[0]} M:${c[1]} W:${c[2]} P:${c[3]}<br>`
 			for (let a=0 ; a<dane[nr][1].length ; a++)
 			{
 				s.innerHTML+=`#${a+1}<br>`
