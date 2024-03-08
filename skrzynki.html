@@ -248,11 +248,11 @@
 				napis.style.background="rgba(0,0,0,0.5)"
 				napis.innerHTML=funkcjeCzasu.pokazDate(dane[a][0])
 				pasek.appendChild(napis)
-				pasek.onclick = new Function(`ekran.szczegoly(${a})`)
+				pasek.onclick = new Function(`ekran.szczegoly(${a},${JSON.stringify(c)})`)
 				document.getElementById("glowny").appendChild(pasek)
 			}
 		},
-		szczegoly:function(nr)
+		szczegoly:function(nr,c)
 		{
 			document.getElementById("glowny").innerHTML=""
 			if (true)
@@ -271,6 +271,7 @@
 			}
 			let s=document.createElement("div")
 			s.innerHTML=`dane zapisane dnia ${funkcjeCzasu.pokazDate(dane[nr][0])}<br>`
+			s.innerHTML=`suma: D:${c[0]} M:${c[1]} W:${c[2]} P:${c[3]}<br>`
 			for (let a=0 ; a<dane[nr][1].length ; a++)
 			{
 				s.innerHTML+=`#${a+1}<br>`
@@ -292,7 +293,7 @@
 			else
 			{
 				c.style.marginTop="0"
-				if (z)
+				if (z==1)
 				{
 					c.appendChild(ekran.guzik("ZAPISZ","#616100",`zapisz()`))
 				}
@@ -459,12 +460,10 @@
 			else if (c[a]>0)
 			{
 				div.style.color="#f7e34d"
-				z=0
 			}
 			else
 			{
 				div.style.color="black"
-				z=0
 			}
 			div.style.position="absolute"
 			div.style[["top","bottom","top","bottom"][a]]="1.5vh"
