@@ -305,14 +305,15 @@
 	    	}
 	    }
     }
-    function skrot(nazwa)
+    function skrot(nazwa,dlugosc)
     {
     	if (!nazwa || typeof nazwa!="string"){return "BŁĄD"}
+    	dlugosc=dlugosc||7
     	let zwrotka=""
-    	for (let i=0 ; i<Math.min(nazwa.length-1,7) ; i++)
+    	for (let i=0 ; i<Math.min(nazwa.length-1,dlugosc) ; i++)
     	{
     		if (!Number(nazwa[i])){zwrotka+=nazwa[i]}
-    		if (i>1 && /[aąeęiyou]/i.test(nazwa[i]))
+    		if (i>(dlugosc/4) && /[aąeęiyou]/i.test(nazwa[i]))
     		{
     			if (!Number(nazwa[i+1])){zwrotka+=nazwa[i+1]}
     			let nr=""
@@ -330,7 +331,19 @@
     			return zwrotka.toUpperCase()
     		}
     	}
-    	return nazwa
+    	let nr=""
+    	for (let j=0 ; j<nazwa.length ; j++)
+    	{
+    		if (Number(nazwa[j]) || nazwa[j]=="0")
+    		{
+    			nr+=nazwa[j]
+    		}
+    	}
+    	if (Number(nr)>1)
+    	{
+    		zwrotka+=nr
+    	}
+    	return zwrotka
     }
     function zaznaczPrzewoznika(nr)
     {
@@ -404,8 +417,9 @@
     	rampa.innerHTML=`Rampa: ${dostepneRampy[(dane.nrTrasy-1)%dostepneRampy.length]}`
     	podwiersz3.appendChild(rampa)
     	//
-    	for (punkt of dane.trasa)
+    	for (let i=0 ; i<dane.trasa.length ; i++)
     	{
+    		const punkt=dane.trasa[i]
     		const przystanek=document.createElement("div")
     		przystanek.className="przystanek"
     		//
@@ -416,7 +430,15 @@
     		//
     		const nazwa=document.createElement("div")
     		nazwa.className="nazwa"
-    		nazwa.innerHTML=`${punkt.nazwa}`
+    		nazwa.innerHTML=`${i+1} &nbsp; `
+    		if (punkt.nazwa.length>14)
+    		{
+    			nazwa.innerHTML+=`${skrot(punkt.nazwa,17)}`
+    		}
+    		else
+    		{
+    			nazwa.innerHTML+=`${skrot(punkt.nazwa,20)}`
+    		}
     		if (punkt.typ)
     		{
     			nazwa.innerHTML+=` &nbsp; [${punkt.typ}]`
