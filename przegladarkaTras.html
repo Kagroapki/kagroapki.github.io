@@ -60,27 +60,27 @@
 	.podwiersz
 	{
 		width: 100%;
-		min-height: 2.7vh;
+		min-height: 3vh;
 	}
 	.numer
 	{
 		position: relative;
 		float: left;
-		padding: 0.3vh;
+		padding: 0.4vh;
 		color: #7f7f7f;
 	}
 	.numerZaznaczony
 	{
 		position: relative;
 		float: left;
-		padding: 0.3vh;
+		padding: 0.4vh;
 		color: gold;
 	}
 	.przewoznik
 	{
 		position: relative;
 		float: left;
-		padding: 0.3vh;
+		padding: 0.4vh;
 		margin-left: 2vh;
 		color: #e3e3e3;
 		font-weight: 700;
@@ -89,14 +89,14 @@
 	{
 		position: relative;
 		float: left;
-		padding: 0.3vh;
+		padding: 0.4vh;
 		color: #7f7f7f;
 	}
 	.waga
 	{
 		position: relative;
 		float: left;
-		padding: 0.3vh;
+		padding: 0.4vh;
 		margin-left: 0.5vh;
 		color: #b1b1b1;
 		font-weight: 700;
@@ -105,22 +105,23 @@
 	{
 		position: relative;
 		float: right;
-		padding: 0.3vh;
+		padding: 0.4vh;
 		color: white;
 		font-weight: 700;
+		letter-spacing: 0.2vh;
 	}
 	.rampa
 	{
 		position: relative;
 		float: right;
-		padding: 0.3vh;
+		padding: 0.4vh;
 		color: #b11100;
 		font-weight: 700;
 	}
 	.zamknij
 	{
 		width: 100%;
-		padding: 0.3vh;
+		padding: 0.4vh;
 		text-align: center;
 		font-weight: 700;
 		color: #f72f00;
@@ -137,8 +138,15 @@
 	{
 		width: 20%;
 		box-sizing: border-box;
-		border: solid 0.3vh white;
+		border: solid 0.4vh white;
 		text-align: center;
+	}
+	.klucze
+	{
+		position: relative;
+		width: 100%;
+		padding: 0.4vh;
+		color: #7f7f7f;
 	}
 </style>
 <script>
@@ -381,10 +389,13 @@
     	podwiersz3.className="podwiersz"
     	const podwiersz4=document.createElement("div")
     	podwiersz4.className="podwiersz"
+    	const podwiersz5=document.createElement("div")
+    	podwiersz5.className="podwiersz"
     	div.appendChild(podwiersz1)
     	div.appendChild(podwiersz2)
     	div.appendChild(podwiersz3)
     	div.appendChild(podwiersz4)
+    	div.appendChild(podwiersz5)
     	//
     	const zamknij=document.createElement("div")
     	zamknij.className="zamknij"
@@ -409,6 +420,7 @@
     	//
     	const waga=document.createElement("div")
     	waga.className="waga"
+    	waga.style.marginLeft="0vh"
     	waga.innerHTML=`Waga Towaru: ${dane.waga}t`
     	podwiersz3.appendChild(waga)
     	//
@@ -416,6 +428,8 @@
     	rampa.className="rampa"
     	rampa.innerHTML=`Rampa: ${dostepneRampy[(dane.nrTrasy-1)%dostepneRampy.length]}`
     	podwiersz3.appendChild(rampa)
+    	//
+    	const klucze=[]
     	//
     	for (let i=0 ; i<dane.trasa.length ; i++)
     	{
@@ -443,6 +457,10 @@
     		{
     			nazwa.innerHTML+=` &nbsp; [${punkt.typ}]`
     		}
+    		else
+    		{
+    			klucze.push(`${skrot(punkt.nazwa,5)}`)
+    		}
     		przystanek.appendChild(nazwa)
     		//
     		const waga=document.createElement("div")
@@ -456,7 +474,35 @@
     		waga.innerHTML+=` &nbsp; ${Math.round(punkt.waga/10)*10} kg`
     		przystanek.appendChild(waga)
     		//
-    		podwiersz4.appendChild(przystanek)
+    		podwiersz5.appendChild(przystanek)
+    	}
+    	if (klucze.length>0)
+    	{
+    		if (klucze.length===1)
+    		{
+    			const kluczeDiv=document.createElement("div")
+	    		kluczeDiv.className="klucze"
+	    		kluczeDiv.innerHTML=`klucz: ${klucze[0]}`
+	    		podwiersz4.appendChild(kluczeDiv)
+    		}
+    		else
+    		{
+    			const kluczeDiv=document.createElement("div")
+    			kluczeDiv.className="klucze"
+    			if (klucze.length<5)
+    			{
+    				kluczeDiv.innerHTML=`${klucze.length} klucze:`
+    			}
+    			else
+    			{
+    				kluczeDiv.innerHTML=`${klucze.length} kluczy:`
+    			}
+	    		for (let klucz of klucze)
+	    		{
+	    			kluczeDiv.innerHTML+=` &nbsp; ${klucz}`
+	    		}
+	    		podwiersz4.appendChild(kluczeDiv)
+    		}
     	}
     }
 </script>
