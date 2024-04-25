@@ -437,65 +437,6 @@
     		podwiersz4.appendChild(przystanek)
     	}
     }
-    function propozycjaZaladunku(dane)
-    {
-    	const div=document.getElementById("podgladTrasy")
-    	div.innerHTML=""
-    	if (!dane)
-    	{
-    		div.style.top="-150vh"
-    		return
-    	}
-    	div.style.top="5vh"
-    	const podwiersz1=document.createElement("div")
-    	podwiersz1.className="podwiersz"
-    	const podwiersz2=document.createElement("div")
-    	podwiersz2.className="podwiersz"
-    	const podwiersz3=document.createElement("div")
-    	podwiersz3.className="podwiersz"
-    	const podwiersz4=document.createElement("div")
-    	podwiersz4.className="podwiersz"
-    	div.appendChild(podwiersz1)
-    	div.appendChild(podwiersz2)
-    	div.appendChild(podwiersz3)
-    	div.appendChild(podwiersz4)
-    	//
-    	const zamknij=document.createElement("div")
-    	zamknij.className="zamknij"
-    	zamknij.innerHTML="Zamknij Podgląd"
-    	podwiersz1.appendChild(zamknij)
-    	podwiersz1.onclick = new Function(`pokazTrase()`)
-    	//
-    	const numer=document.createElement("div")
-    	numer.className=`numer`
-    	numer.innerHTML=`Nr: ${dane.nrTrasy}`
-    	podwiersz2.appendChild(numer)
-    	//
-    	const przewoznik=document.createElement("div")
-    	przewoznik.className="przewoznik"
-    	przewoznik.innerHTML=`${dane.przewoznik||"źle odczytany przewoźnik"}`
-    	podwiersz2.appendChild(przewoznik)
-    	//
-    	const godzina=document.createElement("div")
-    	godzina.className="godzina"
-    	godzina.innerHTML=(dane.godzina||"??:??")
-    	podwiersz2.appendChild(godzina)
-    	//
-    	const waga=document.createElement("div")
-    	waga.className="waga"
-    	waga.innerHTML=`Waga Towaru: ${dane.waga}t`
-    	podwiersz3.appendChild(waga)
-    	//
-    	const rampa=document.createElement("div")
-    	rampa.className="rampa"
-    	rampa.innerHTML=`Rampa: ${dostepneRampy[(dane.nrTrasy-1)%dostepneRampy.length]}`
-    	podwiersz3.appendChild(rampa)
-    	//
-    	for (punkt of dane.trasa)
-    	{
-    		//
-    	}
-    }
 </script>
 </head>
 <body onload="start()">
