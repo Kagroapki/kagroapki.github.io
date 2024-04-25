@@ -166,11 +166,11 @@
     	let typZapisu=0
     	const tekst = plik.target.result
     	const wiersze=tekst.split("\r\n")
-    	if (wiersze[0]=="Lp.,Nr przewoźnika,Pl. data załadunku,Lista przystanków")
+    	if (wiersze[0]==="Lp.,Przewoźnik,Pl. data załadunku,Lista przystanków" || wiersze[0]==="Lp.,Nr przewoźnika,Pl. data załadunku,Lista przystanków")
     	{
     		typZapisu=0
     	}
-    	else if (wiersze[0]=="Lp.,Pl. data załadunku,Nr przewoźnika,Lista przystanków")
+    	else if (wiersze[0]=="Lp.,Pl. data załadunku,Przewoźnik,Lista przystanków" || wiersze[0]=="Lp.,Pl. data załadunku,Nr przewoźnika,Lista przystanków")
     	{
     		typZapisu=1
     	}
