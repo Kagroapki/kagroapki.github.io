@@ -163,18 +163,26 @@
     }
     function analizaPliku(plik)
     {
+    	let typZapisu=0
     	const tekst = plik.target.result
     	const wiersze=tekst.split("\r\n")
-    	if (wiersze[0]!="Lp.,Nr przewoźnika,Pl. data załadunku,Lista przystanków")
+    	if (wiersze[0]=="Lp.,Nr przewoźnika,Pl. data załadunku,Lista przystanków")
     	{
-    		document.write(JSON.stringify(wiersze))
+    		typZapisu=0
+    	}
+    	else if (wiersze[0]=="Lp.,Pl. data załadunku,Nr przewoźnika,Lista przystanków")
+    	{
+    		typZapisu=1
+    	}
+    	else
+    	{
     		return alert("plik nie ma odpowiedniej konstrukcji")
     	}
     	const trasy=[]
         for (i=1 ; i<wiersze.length ; i++)
         {
         	if (wiersze[i].length<0){continue}
-        	const trasa=(wiersze[i].match(/(?<nrTrasy>(\d)+),(?<przewoznik>[^,]+),(?<data>\d{4}-\d{2}-\d{2}) (?<godzina>\d{2}:\d{2}),(?<trasa>.+)/)||{}).groups
+        	const trasa=(wiersze[i].match([/(?<nrTrasy>(\d)+),(?<przewoznik>[^,]+),(?<data>\d{4}-\d{2}-\d{2}) (?<godzina>\d{2}:\d{2}),(?<trasa>.+)/,/(?<nrTrasy>(\d)+),(?<data>\d{4}-\d{2}-\d{2}) (?<godzina>\d{2}:\d{2}),(?<przewoznik>[^,]+),(?<trasa>.+)/][typZapisu])||{}).groups
         	if (!trasa || typeof trasa!="object"){console.log(`odrzucono trasę: ${wiersze[i]}`);continue}
         	trasa.nrTrasy=Number(trasa.nrTrasy)
         	if (!(trasa.nrTrasy>0)){alert("błąd numeru trasy");continue}
@@ -409,6 +417,10 @@
     		const nazwa=document.createElement("div")
     		nazwa.className="nazwa"
     		nazwa.innerHTML=`${punkt.nazwa}`
+    		if (punkt.typ)
+    		{
+    			nazwa.innerHTML+=` &nbsp; [${punkt.typ}]`
+    		}
     		przystanek.appendChild(nazwa)
     		//
     		const waga=document.createElement("div")
