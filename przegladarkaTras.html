@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>GeneratorPrzeglądarkiTras</title>
+<style type="text/css">
+	*
+	{
+		background: rgba(0,0,0,0);
+		margin: 0;
+		padding: 0;
+	}
+	body
+	{
+		background: black;
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 1.7vh;
+	}
+	input
+	{
+		position: absolute;
+		background: #252525;
+		color: white;
+		top: 40vh;
+		left: 50%;
+		height: 10vh;
+		width: 40vh;
+		margin-left: -20vh;
+	}
+	#trasy
+	{
+		position: absolute;
+		top: 1vh;
+		width: 48vh;
+		left: 50%;
+		margin-left: -24vh;
+		min-height: 10vh;
+		background: #1b1b1b;
+		color: white;
+	}
+	#podgladTrasy
+	{
+		position: fixed;
+		top: -150vh;
+		width: 48vh;
+		left: 50%;
+		margin-left: -24vh;
+		min-height: 10vh;
+		background: #1b1b1b;
+		color: white;
+		border: solid 0.2vh white;
+	}
+	.wiersz
+	{
+		width: 47vh;
+		min-height: 5.4vh;
+		margin: 0.5vh;
+		background: black;
+	}
+	.podwiersz
+	{
+		width: 100%;
+		min-height: 2.7vh;
+	}
+	.numer
+	{
+		position: relative;
+		float: left;
+		padding: 0.3vh;
+		color: #7f7f7f;
+	}
+	.numerZaznaczony
+	{
+		position: relative;
+		float: left;
+		padding: 0.3vh;
+		color: gold;
+	}
+	.przewoznik
+	{
+		position: relative;
+		float: left;
+		padding: 0.3vh;
+		margin-left: 2vh;
+		color: #e3e3e3;
+		font-weight: 700;
+	}
+	.nazwa
+	{
+		position: relative;
+		float: left;
+		padding: 0.3vh;
+		color: #7f7f7f;
+	}
+	.waga
+	{
+		position: relative;
+		float: left;
+		padding: 0.3vh;
+		margin-left: 0.5vh;
+		color: #b1b1b1;
+		font-weight: 700;
+	}
+	.godzina
+	{
+		position: relative;
+		float: right;
+		padding: 0.3vh;
+		color: white;
+		font-weight: 700;
+	}
+	.rampa
+	{
+		position: relative;
+		float: right;
+		padding: 0.3vh;
+		color: #b11100;
+		font-weight: 700;
+	}
+	.zamknij
+	{
+		width: 100%;
+		padding: 0.3vh;
+		text-align: center;
+		font-weight: 700;
+		color: #f72f00;
+		letter-spacing: 0.2vh;
+	}
+	.przystanek
+	{
+		width: 47vh;
+		min-height: 2.7vh;
+		margin: 0.5vh;
+		background: black;
+	}
+	.przedzial
+	{
+		width: 20%;
+		box-sizing: border-box;
+		border: solid 0.3vh white;
+		text-align: center;
+	}
+</style>
+<script>
+	const dostepneRampy=[1,2,3,4,5,6,7]
+	function start()
+	{
+		document.getElementById('fileInput').addEventListener('change',analizaPlikow)
+	}
+    function analizaPlikow(pliki)
+    {
+    	if (pliki.target.files.length<1)
+    	{
+    		return alert("nie załadowano żadnego pliku")
+    	}
+    	for (let plik of pliki.target.files)
+    	{
+    		if (!plik){continue}
+    		const reader = new FileReader
+    		reader.onload=analizaPliku
+    		reader.readAsText(plik)
+    	}
+    }
+    function analizaPliku(plik)
+    {
+    	const tekst = plik.target.result
+    	const wiersze=tekst.split("\r\n")
+    	if (wiersze[0]!="Lp.,Nr przewoźnika,Pl. data załadunku,Lista przystanków")
+    	{
+    		return alert("plik nie ma odpowiedniej konstrukcji")
+    	}
+    	const trasy=[]
+        for (i=1 ; i<wiersze.length ; i++)
+        {
+        	if (wiersze[i].length<0){continue}
+        	const trasa=(wiersze[i].match(/(?<nrTrasy>(\d)+),(?<przewoznik>[^,]+),(?<data>\d{4}-\d{2}-\d{2}) (?<godzina>\d{2}:\d{2}),(?<trasa>.+)/)||{}).groups
+        	if (!trasa || typeof trasa!="object"){console.log(`odrzucono trasę: ${wiersze[i]}`);continue}
+        	trasa.nrTrasy=Number(trasa.nrTrasy)
+        	if (!(trasa.nrTrasy>0)){alert("błąd numeru trasy");continue}
+        	const punkty=trasa.trasa.match(/\[\d{2}:\d{2}\][^\[\]-]+(?:\[[^-]+?\])?\[[^-]*?\/[\d\.,]+(?:kg)?\](?:-)?/g)
+        	if (punkty.length<1){alert("błąd konstrukcji trasy");continue}
+        	trasa.trasa=[]
+        	for (let j=0 ; j<punkty.length ; j++)
+        	{
+        		const punkt=(punkty[j].match(/\[(?<godzina>\d{2}:\d{2})\](?<nazwa>[^\[\]-]+)(?:\[(?<typ>[^-]+?)\])?\[[^-]*?\/(?<waga>[\d\.,]+)(?:kg)?\]/)||{}).groups
+        		if (!punkt || typeof punkt!="object"){console.log(`odrzucono punkt trasy: ${punkty[j]}`);continue}
+        		if (!punkt.nazwa || !punkt.godzina){alert("błąd konstrunkcji punktu trasy");continue}
+        		punkt.waga=Number(punkt.waga)||0
+        		trasa.trasa.push(punkt)
+        	}
+        	trasa.waga=sumaWagi(trasa)
+        	trasy[Number(trasa.nrTrasy)]=trasa
+        }
+        pokazTrasy(trasy)
+        function sumaWagi(trasa)
+	    {
+	    	if (!Array.isArray(trasa.trasa)){return "BŁĄD"}
+	    	if (trasa.trasa.length===1){return trasa.trasa[0].waga||0}
+	    	let zwrotka=0
+	    	for (let i=0 ; i<trasa.trasa.length ; i++)
+	    	{
+	    		zwrotka+=trasa.trasa[i].waga
+	    	}
+	    	return Math.round(zwrotka/100)/10
+	    }
+    }
+    function pokazTrasy(trasy)
+    {
+    	const div=document.getElementById("trasy")
+    	div.innerHTML=""
+    	const przewoznicy=[]
+    	for (let i=1 ; i<trasy.length ; i++)
+    	{
+    		if (!trasy[i].przewoznik){continue}
+    		if (!przewoznicy.includes(trasy[i].przewoznik))
+    		{
+    			przewoznicy.push(trasy[i].przewoznik)
+    		}
+    	}
+    	for (let i=0 ; i<trasy.length ; i++)
+    	{
+    		const wiersz=document.createElement("div")
+    		wiersz.className="wiersz"
+    		div.appendChild(wiersz)
+    		if (i<1)
+    		{
+    			const przewoznik=document.createElement("div")
+	    		przewoznik.className="przewoznik"
+	    		przewoznik.innerHTML=`Data: ${trasy[2].data||"nieznana"}`
+	    		wiersz.appendChild(przewoznik)
+    			continue
+    		}
+    		const podwiersz1=document.createElement("div")
+    		podwiersz1.className="podwiersz"
+    		const podwiersz2=document.createElement("div")
+    		podwiersz2.className="podwiersz"
+    		wiersz.appendChild(podwiersz1)
+    		wiersz.appendChild(podwiersz2)
+    		//
+    		const numer=document.createElement("div")
+    		numer.className=`numer przewoznik_${(przewoznicy.indexOf(trasy[i].przewoznik)+1)||"X"}`
+    		if (trasy[i].nrTrasy<10)
+    		{
+    			numer.innerHTML=`<span style="opacity:0">0</span>#${trasy[i].nrTrasy}`
+    		}
+    		else
+    		{
+    			numer.innerHTML=`#${trasy[i].nrTrasy}`
+    		}
+    		podwiersz1.appendChild(numer)
+    		//
+    		const przewoznik=document.createElement("div")
+    		przewoznik.className="przewoznik"
+    		przewoznik.innerHTML=`${trasy[i].przewoznik||"PRZEWOŹNIK?"}`
+    		przewoznik.onclick = new Function(`zaznaczPrzewoznika(${(przewoznicy.indexOf(trasy[i].przewoznik)+1)||"0"})`)
+    		podwiersz1.appendChild(przewoznik)
+    		//
+    		const godzina=document.createElement("div")
+    		godzina.className="godzina"
+    		godzina.innerHTML=(trasy[i].godzina||"??:??")
+    		podwiersz1.appendChild(godzina)
+    		//
+    		const nazwa=document.createElement("div")
+    		nazwa.className="nazwa"
+    		nazwa.innerHTML=`${skrotNazwyTrasy(trasy[i])}`
+    		nazwa.onclick = new Function(`pokazTrase(${JSON.stringify(trasy[i])})`)
+    		podwiersz2.appendChild(nazwa)
+    		//
+    		const waga=document.createElement("div")
+    		waga.className="waga"
+    		waga.innerHTML=`${trasy[i].waga}t`
+    		podwiersz2.appendChild(waga)
+    		//
+    		const rampa=document.createElement("div")
+    		rampa.className="rampa"
+    		rampa.innerHTML=`R: ${dostepneRampy[(trasy[i].nrTrasy-1)%dostepneRampy.length]}`
+    		podwiersz2.appendChild(rampa)
+    	}
+    	function skrotNazwyTrasy(trasa)
+	    {
+	    	if (!Array.isArray(trasa.trasa)){return "BŁĄD"}
+	    	if (trasa.trasa.length===1){return trasa.trasa[0].nazwa}
+	    	if (trasa.trasa.length===2){return `${skrot(trasa.trasa[0].nazwa)} > ${skrot(trasa.trasa[1].nazwa)}`}
+	    	const max=[0,0]
+	    	for (let i=1 ; i<trasa.trasa.length-1 ; i++)
+	    	{
+	    		if (trasa.trasa[i].waga>max[1])
+	    		{
+	    			max[0]=i
+	    			max[1]=trasa.trasa.waga
+	    		}
+	    	}
+	    	if (max[0]>0)
+	    	{
+	    		return `${skrot(trasa.trasa[0].nazwa)} > ${skrot(trasa.trasa[max[0]].nazwa)} > ${skrot(trasa.trasa[trasa.trasa.length-1].nazwa)}`
+	    	}
+	    }
+    }
+    function skrot(nazwa)
+    {
+    	if (!nazwa || typeof nazwa!="string"){return "BŁĄD"}
+    	let zwrotka=""
+    	for (let i=0 ; i<Math.min(nazwa.length-1,7) ; i++)
+    	{
+    		if (!Number(nazwa[i])){zwrotka+=nazwa[i]}
+    		if (i>1 && /[aąeęiyou]/i.test(nazwa[i]))
+    		{
+    			if (!Number(nazwa[i+1])){zwrotka+=nazwa[i+1]}
+    			let nr=""
+    			for (let j=0 ; j<nazwa.length ; j++)
+    			{
+    				if (Number(nazwa[j]) || nazwa[j]=="0")
+    				{
+    					nr+=nazwa[j]
+    				}
+    			}
+    			if (Number(nr)>1)
+    			{
+    				zwrotka+=nr
+    			}
+    			return zwrotka.toUpperCase()
+    		}
+    	}
+    	return nazwa
+    }
+    function zaznaczPrzewoznika(nr)
+    {
+    	if (nr<1){return}
+    	const znaczniki=document.getElementsByClassName(`numerZaznaczony`)
+   		for (let z=0 ; z<200 ; z++)
+   		{
+   			if (znaczniki.length<1){break}
+   			znaczniki[0].className=znaczniki[0].className.replace("numerZaznaczony ","numer ")
+   		}
+    	setTimeout(()=>
+    	{
+    		const znaczniki=document.getElementsByClassName(`przewoznik_${nr}`)
+	    	for (let znacznik of znaczniki)
+	    	{
+	    		znacznik.className=znacznik.className.replace("numer ","numerZaznaczony ")
+	    	}
+    	},50)
+    }
+    function pokazTrase(dane)
+    {
+    	const div=document.getElementById("podgladTrasy")
+    	div.innerHTML=""
+    	if (!dane)
+    	{
+    		div.style.top="-150vh"
+    		return
+    	}
+    	div.style.top="5vh"
+    	const podwiersz1=document.createElement("div")
+    	podwiersz1.className="podwiersz"
+    	const podwiersz2=document.createElement("div")
+    	podwiersz2.className="podwiersz"
+    	const podwiersz3=document.createElement("div")
+    	podwiersz3.className="podwiersz"
+    	const podwiersz4=document.createElement("div")
+    	podwiersz4.className="podwiersz"
+    	div.appendChild(podwiersz1)
+    	div.appendChild(podwiersz2)
+    	div.appendChild(podwiersz3)
+    	div.appendChild(podwiersz4)
+    	//
+    	const zamknij=document.createElement("div")
+    	zamknij.className="zamknij"
+    	zamknij.innerHTML="Zamknij Podgląd"
+    	podwiersz1.appendChild(zamknij)
+    	podwiersz1.onclick = new Function(`pokazTrase()`)
+    	//
+    	const numer=document.createElement("div")
+    	numer.className=`numer`
+    	numer.innerHTML=`Nr: ${dane.nrTrasy}`
+    	podwiersz2.appendChild(numer)
+    	//
+    	const przewoznik=document.createElement("div")
+    	przewoznik.className="przewoznik"
+    	przewoznik.innerHTML=`${dane.przewoznik||"źle odczytany przewoźnik"}`
+    	podwiersz2.appendChild(przewoznik)
+    	//
+    	const godzina=document.createElement("div")
+    	godzina.className="godzina"
+    	godzina.innerHTML=(dane.godzina||"??:??")
+    	podwiersz2.appendChild(godzina)
+    	//
+    	const waga=document.createElement("div")
+    	waga.className="waga"
+    	waga.innerHTML=`Waga Towaru: ${dane.waga}t`
+    	podwiersz3.appendChild(waga)
+    	//
+    	const rampa=document.createElement("div")
+    	rampa.className="rampa"
+    	rampa.innerHTML=`Rampa: ${dostepneRampy[(dane.nrTrasy-1)%dostepneRampy.length]}`
+    	podwiersz3.appendChild(rampa)
+    	//
+    	for (punkt of dane.trasa)
+    	{
+    		const przystanek=document.createElement("div")
+    		przystanek.className="przystanek"
+    		//
+    		const godzina=document.createElement("div")
+    		godzina.className="godzina"
+    		godzina.innerHTML=(punkt.godzina||"??:??")
+    		przystanek.appendChild(godzina)
+    		//
+    		const nazwa=document.createElement("div")
+    		nazwa.className="nazwa"
+    		nazwa.innerHTML=`${punkt.nazwa}`
+    		przystanek.appendChild(nazwa)
+    		//
+    		const waga=document.createElement("div")
+    		waga.className="waga"
+    		waga.style.float="right"
+    		waga.style.marginRight="2vh"
+    		for (let i=0 ; i<Math.round(punkt.waga/50) ; i++)
+    		{
+    			waga.innerHTML+=`!`
+    		}
+    		waga.innerHTML+=` &nbsp; ${Math.round(punkt.waga/10)*10} kg`
+    		przystanek.appendChild(waga)
+    		//
+    		podwiersz4.appendChild(przystanek)
+    	}
+    }
+    function propozycjaZaladunku(dane)
+    {
+    	const div=document.getElementById("podgladTrasy")
+    	div.innerHTML=""
+    	if (!dane)
+    	{
+    		div.style.top="-150vh"
+    		return
+    	}
+    	div.style.top="5vh"
+    	const podwiersz1=document.createElement("div")
+    	podwiersz1.className="podwiersz"
+    	const podwiersz2=document.createElement("div")
+    	podwiersz2.className="podwiersz"
+    	const podwiersz3=document.createElement("div")
+    	podwiersz3.className="podwiersz"
+    	const podwiersz4=document.createElement("div")
+    	podwiersz4.className="podwiersz"
+    	div.appendChild(podwiersz1)
+    	div.appendChild(podwiersz2)
+    	div.appendChild(podwiersz3)
+    	div.appendChild(podwiersz4)
+    	//
+    	const zamknij=document.createElement("div")
+    	zamknij.className="zamknij"
+    	zamknij.innerHTML="Zamknij Podgląd"
+    	podwiersz1.appendChild(zamknij)
+    	podwiersz1.onclick = new Function(`pokazTrase()`)
+    	//
+    	const numer=document.createElement("div")
+    	numer.className=`numer`
+    	numer.innerHTML=`Nr: ${dane.nrTrasy}`
+    	podwiersz2.appendChild(numer)
+    	//
+    	const przewoznik=document.createElement("div")
+    	przewoznik.className="przewoznik"
+    	przewoznik.innerHTML=`${dane.przewoznik||"źle odczytany przewoźnik"}`
+    	podwiersz2.appendChild(przewoznik)
+    	//
+    	const godzina=document.createElement("div")
+    	godzina.className="godzina"
+    	godzina.innerHTML=(dane.godzina||"??:??")
+    	podwiersz2.appendChild(godzina)
+    	//
+    	const waga=document.createElement("div")
+    	waga.className="waga"
+    	waga.innerHTML=`Waga Towaru: ${dane.waga}t`
+    	podwiersz3.appendChild(waga)
+    	//
+    	const rampa=document.createElement("div")
+    	rampa.className="rampa"
+    	rampa.innerHTML=`Rampa: ${dostepneRampy[(dane.nrTrasy-1)%dostepneRampy.length]}`
+    	podwiersz3.appendChild(rampa)
+    	//
+    	for (punkt of dane.trasa)
+    	{
+    		//
+    	}
+    }
+</script>
+</head>
+<body onload="start()">
+	<input type="file" id="fileInput" accept=".csv"> <!-- Akceptujemy tylko pliki CSV -->
+	<div id="trasy"></div>
+	<div id="podgladTrasy"></div>
+</body>
+</html>
