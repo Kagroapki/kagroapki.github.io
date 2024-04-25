@@ -167,6 +167,7 @@
     	const wiersze=tekst.split("\r\n")
     	if (wiersze[0]!="Lp.,Nr przewoźnika,Pl. data załadunku,Lista przystanków")
     	{
+    		document.write(JSON.stringify(wiersze))
     		return alert("plik nie ma odpowiedniej konstrukcji")
     	}
     	const trasy=[]
