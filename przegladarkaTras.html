@@ -336,7 +336,7 @@
     	let zwrotka=""
     	for (let i=0 ; i<Math.min(nazwa.length-1,dlugosc) ; i++)
     	{
-    		if (!Number(nazwa[i])){zwrotka+=nazwa[i]}
+    		if (!Number(nazwa[i]) && nazwa[i]!="0"){zwrotka+=nazwa[i]}
     		if (i>(dlugosc/4) && /[aąeęiyou]/i.test(nazwa[i]))
     		{
     			if (!Number(nazwa[i+1])){zwrotka+=nazwa[i+1]}
@@ -350,7 +350,7 @@
     			}
     			if (Number(nr)>1)
     			{
-    				zwrotka+=nr
+    				zwrotka+=Number(nr)
     			}
     			return zwrotka.toUpperCase()
     		}
@@ -365,7 +365,7 @@
     	}
     	if (Number(nr)>1)
     	{
-    		zwrotka+=nr
+    		zwrotka+=Number(nr)
     	}
     	return zwrotka
     }
@@ -462,6 +462,15 @@
     		const nazwa=document.createElement("div")
     		nazwa.className="nazwa"
     		nazwa.innerHTML=`${i+1} &nbsp; `
+    		if (punkt.typ)
+    		{
+    			nazwa.innerHTML+=`[${punkt.typ}] &nbsp; `
+    		}
+    		else
+    		{
+    			nazwa.innerHTML+=`[&nbsp;&nbsp;] &nbsp; `
+    			klucze.push(`${skrot(punkt.nazwa,5)}`)
+    		}
     		if (punkt.nazwa.length>14)
     		{
     			nazwa.innerHTML+=`${skrot(punkt.nazwa,17)}`
@@ -469,14 +478,6 @@
     		else
     		{
     			nazwa.innerHTML+=`${skrot(punkt.nazwa,20)}`
-    		}
-    		if (punkt.typ)
-    		{
-    			nazwa.innerHTML+=` &nbsp; [${punkt.typ}]`
-    		}
-    		else
-    		{
-    			klucze.push(`${skrot(punkt.nazwa,5)}`)
     		}
     		przystanek.appendChild(nazwa)
     		//
