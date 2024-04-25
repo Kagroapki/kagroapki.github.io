@@ -153,7 +153,16 @@
 	const dostepneRampy=[1,2,3,4,5,6,7]
 	function start()
 	{
-		document.getElementById('fileInput').addEventListener('change',analizaPlikow)
+		const wczytaneTrasa=JSON.parse(localStorage.getItem("wczytaneTrasa"))
+		if (wczytaneTrasa && typeof wczytaneTrasa==="object")
+		{
+			pokazTrasy(wczytaneTrasa)
+			return
+		}
+		else
+		{
+			document.getElementById('fileInput').addEventListener('change',analizaPlikow)
+		}
 	}
     function analizaPlikow(pliki)
     {
@@ -208,6 +217,7 @@
         	trasa.waga=sumaWagi(trasa)
         	trasy[Number(trasa.nrTrasy)]=trasa
         }
+        localStorage.setItem("wczytaneTrasa",JSON.stringify(trasy))
         pokazTrasy(trasy)
         function sumaWagi(trasa)
 	    {
@@ -243,7 +253,8 @@
     		{
     			const przewoznik=document.createElement("div")
 	    		przewoznik.className="przewoznik"
-	    		przewoznik.innerHTML=`Data: ${trasy[2].data||"nieznana"}`
+	    		przewoznik.innerHTML=`Data: ${trasy[2].data||"nieznana"} &nbsp; &nbsp; kliknij żeby wczytać inną`
+	    		wiersz.onclick=reset
 	    		wiersz.appendChild(przewoznik)
     			continue
     		}
@@ -504,6 +515,11 @@
 	    		podwiersz4.appendChild(kluczeDiv)
     		}
     	}
+    }
+    function reset()
+    {
+    	localStorage.setItem("wczytaneTrasa","0")
+    	location.reload()
     }
 </script>
 </head>
