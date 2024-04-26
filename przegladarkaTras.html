@@ -313,20 +313,21 @@
 	    {
 	    	if (!Array.isArray(trasa.trasa)){return "BŁĄD"}
 	    	if (trasa.trasa.length===1){return trasa.trasa[0].nazwa}
-	    	if (trasa.trasa.length===2){return `${skrot(trasa.trasa[0].nazwa)} > ${skrot(trasa.trasa[1].nazwa)}`}
+	    	if (trasa.trasa.length===2){return `${trasa.trasa[0].nazwa} > ${skrot(trasa.trasa[1].nazwa)}`}
 	    	const max=[0,0]
 	    	for (let i=1 ; i<trasa.trasa.length-1 ; i++)
 	    	{
-	    		if (trasa.trasa[i].waga>max[1])
+	    		if (Number(trasa.trasa[i].waga)>max[1])
 	    		{
 	    			max[0]=i
-	    			max[1]=trasa.trasa.waga
+	    			max[1]=Number(trasa.trasa[i].waga)
 	    		}
 	    	}
 	    	if (max[0]>0)
 	    	{
-	    		return `${skrot(trasa.trasa[0].nazwa)} > ${skrot(trasa.trasa[max[0]].nazwa)} > ${skrot(trasa.trasa[trasa.trasa.length-1].nazwa)}`
+	    		return `${skrot(trasa.trasa[0].nazwa,14)} > ${skrot(trasa.trasa[max[0]].nazwa)} > ${skrot(trasa.trasa[trasa.trasa.length-1].nazwa)}`
 	    	}
+	    	return trasa.trasa[0].nazwa
 	    }
     }
     function skrot(nazwa,dlugosc)
