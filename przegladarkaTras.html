@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title>GeneratorPrzeglądarkiTras</title>
+<title>Przeglądarka Tras</title>
 <style type="text/css">
 	*
 	{
@@ -21,7 +21,7 @@
 		position: absolute;
 		background: #252525;
 		color: white;
-		top: 40vh;
+		top: 45vh;
 		left: 50%;
 		height: 10vh;
 		width: 40vh;
@@ -116,6 +116,14 @@
 		float: right;
 		padding: 0.4vh;
 		color: #b11100;
+		font-weight: 700;
+	}
+	.rampaZaznaczona
+	{
+		position: relative;
+		float: right;
+		padding: 0.4vh;
+		color: gold;
 		font-weight: 700;
 	}
 	.zamknij
@@ -305,8 +313,10 @@
     		podwiersz2.appendChild(waga)
     		//
     		const rampa=document.createElement("div")
-    		rampa.className="rampa"
-    		rampa.innerHTML=`R: ${dostepneRampy[(trasy[i].nrTrasy-1)%dostepneRampy.length]}`
+    		const nrRampy=dostepneRampy[(trasy[i].nrTrasy-1)%dostepneRampy.length]
+    		rampa.onclick = new Function(`zaznaczRampy(${nrRampy})`)
+    		rampa.className=`rampa rampa_${nrRampy}`
+    		rampa.innerHTML=`R: ${nrRampy}`
     		podwiersz2.appendChild(rampa)
     	}
     	function skrotNazwyTrasy(trasa)
@@ -330,45 +340,92 @@
 	    	return trasa.trasa[0].nazwa
 	    }
     }
-    function skrot(nazwa,dlugosc)
+    function skrot(nazwa,oczekiwanaDlugosc)
     {
     	if (!nazwa || typeof nazwa!="string"){return "BŁĄD"}
-    	dlugosc=dlugosc||7
-    	let zwrotka=""
-    	for (let i=0 ; i<Math.min(nazwa.length-1,dlugosc) ; i++)
-    	{
-    		if (!Number(nazwa[i]) && nazwa[i]!="0"){zwrotka+=nazwa[i]}
-    		if (i>(dlugosc/4) && /[aąeęiyou]/i.test(nazwa[i]))
-    		{
-    			if (!Number(nazwa[i+1])){zwrotka+=nazwa[i+1]}
-    			let nr=""
-    			for (let j=0 ; j<nazwa.length ; j++)
-    			{
-    				if (Number(nazwa[j]) || nazwa[j]=="0")
-    				{
-    					nr+=nazwa[j]
-    				}
-    			}
-    			if (Number(nr)>1)
-    			{
-    				zwrotka+=Number(nr)
-    			}
-    			return zwrotka.toUpperCase()
-    		}
-    	}
+    	nazwa=nazwa.toUpperCase()
+    	oczekiwanaDlugosc=oczekiwanaDlugosc||7
+    	const czastki=[]
     	let nr=""
-    	for (let j=0 ; j<nazwa.length ; j++)
+    	let pomin=0
+    	for (let i=0 ; i<nazwa.length ; i++)
     	{
-    		if (Number(nazwa[j]) || nazwa[j]=="0")
+    		if (nazwa[i]==")")
     		{
-    			nr+=nazwa[j]
+    			pomin=0
+    			continue
+    		}
+    		if (pomin)
+    		{
+    			continue
+    		}
+    		if (Number(nazwa[i]) || nazwa[i]==="0")
+    		{
+    			nr+=nazwa[i]
+    		}
+    		else if (nazwa[i]=="(")
+    		{
+    			pomin=1
+    			continue
+    		}
+    		else
+    		{
+    			if (nazwa[i]==="R" && nazwa[i+1]==="Z")
+    			{
+    				czastki.push(`${nazwa[i]}${nazwa[i+1]}`)
+    				i++
+    			}
+    			else if (nazwa[i]==="C" && nazwa[i+1]==="H")
+    			{
+    				czastki.push(`${nazwa[i]}${nazwa[i+1]}`)
+    				i++
+    			}
+    			else if ((nazwa[i]==="S" || nazwa[i]==="C") && nazwa[i+1]==="Z")
+    			{
+    				czastki.push(`${nazwa[i]}${nazwa[i+1]}`)
+    				i++
+    			}
+    			else
+    			{
+    				czastki.push(`${nazwa[i]}`)
+    			}
     		}
     	}
-    	if (Number(nr)>1)
+    	for (let i=czastki.length-1 ; i>3 ; i--)
     	{
-    		zwrotka+=Number(nr)
+    		if (czastki[i]==" ")
+    		{
+    			czastki[i]=""
+    		}
+    		else
+    		{
+    			break
+    		}
     	}
-    	return zwrotka
+    	nr=Number(nr)
+    	if (nr==1){nr=0}
+    	let zwrotka=""
+    	for (let i=0 ; i<czastki.length ; i++)
+    	{
+    		zwrotka+=czastki[i]
+    		if (i<czastki.length-4 && (zwrotka.length>oczekiwanaDlugosc/3 || `${zwrotka}${nr||""}`.length>=(oczekiwanaDlugosc-2)))
+    		{
+    			if (/[aąeęiyou]/i.test(czastki[i]))
+    			{
+    				if (czastki[i+1]!=" ")
+    				{
+    					zwrotka+=(czastki[i+1]||"")
+    				}
+    				else if (czastki[i+2]!=" ")
+    				{
+						zwrotka+=`${(czastki[i+1]||"")} ${(czastki[i+2]||"")}`
+    				}
+    				zwrotka+="."
+    				break
+    			}
+    		}
+    	}
+    	return `${zwrotka}${nr||""}`
     }
     function zaznaczPrzewoznika(nr)
     {
@@ -385,6 +442,24 @@
 	    	for (let znacznik of znaczniki)
 	    	{
 	    		znacznik.className=znacznik.className.replace("numer ","numerZaznaczony ")
+	    	}
+    	},50)
+    }
+    function zaznaczRampy(nr)
+    {
+    	if (nr<1){return}
+    	const znaczniki=document.getElementsByClassName(`rampaZaznaczona`)
+   		for (let z=0 ; z<200 ; z++)
+   		{
+   			if (znaczniki.length<1){break}
+   			znaczniki[0].className=znaczniki[0].className.replace("rampaZaznaczona ","rampa ")
+   		}
+    	setTimeout(()=>
+    	{
+    		const znaczniki=document.getElementsByClassName(`rampa_${nr}`)
+	    	for (let znacznik of znaczniki)
+	    	{
+	    		znacznik.className=znacznik.className.replace("rampa ","rampaZaznaczona ")
 	    	}
     	},50)
     }
@@ -439,12 +514,12 @@
     	const waga=document.createElement("div")
     	waga.className="waga"
     	waga.style.marginLeft="0vh"
-    	waga.innerHTML=`Waga Towaru: ${dane.waga}t`
+    	waga.innerHTML=`Waga Towaru: &nbsp; ${dane.waga}t`
     	podwiersz3.appendChild(waga)
     	//
     	const rampa=document.createElement("div")
     	rampa.className="rampa"
-    	rampa.innerHTML=`Rampa: ${dostepneRampy[(dane.nrTrasy-1)%dostepneRampy.length]}`
+    	rampa.innerHTML=`Rampa: &nbsp; ${dostepneRampy[(dane.nrTrasy-1)%dostepneRampy.length]}`
     	podwiersz3.appendChild(rampa)
     	//
     	const klucze=[]
@@ -462,14 +537,18 @@
     		//
     		const nazwa=document.createElement("div")
     		nazwa.className="nazwa"
-    		nazwa.innerHTML=`${i+1} &nbsp; `
+    		if (i+1<10)
+    		{
+				nazwa.innerHTML+=`<span style="opacity:0;">0</span>`
+    		}
+    		nazwa.innerHTML+=`${i+1} &nbsp; `
     		if (punkt.typ)
     		{
     			nazwa.innerHTML+=`[${punkt.typ}] &nbsp; `
     		}
     		else
     		{
-    			nazwa.innerHTML+=`[&nbsp;&nbsp;] &nbsp; `
+    			nazwa.innerHTML+=`[&nbsp;&nbsp;&nbsp;] &nbsp; `
     			klucze.push(`${skrot(punkt.nazwa,5)}`)
     		}
     		if (punkt.nazwa.length>14)
@@ -478,7 +557,7 @@
     		}
     		else
     		{
-    			nazwa.innerHTML+=`${skrot(punkt.nazwa,20)}`
+    			nazwa.innerHTML+=`${punkt.nazwa}`
     		}
     		przystanek.appendChild(nazwa)
     		//
@@ -534,7 +613,19 @@
 </head>
 <body onload="start()">
 	<input type="file" id="fileInput" accept=".csv"> <!-- Akceptujemy tylko pliki CSV -->
-	<div id="trasy"></div>
+	<div id="trasy">
+		Program do przeglądania tras.<br><br>
+		Instrukcja:<br><br>
+		1. Pobierz <b><u>na telefon</u></b> trasy z rozszerzeniem <b><u>CSV</u></b><br>
+		(szukaj w trzech kropkach -> udostępnij i eksploruj -> zapisz jako -> plik CSV)<br><br>
+		2. Wróć na tą stronę i kliknij poniżej żeby wybrać plik.<br><br>
+		3. Po wybraniu zobaczysz listę tras.<br><br>
+		- Kliknij na skrót trasy żeby zobaczyć całość.<br>
+		- Kliknij na swojego przewoźnika żeby zaznaczyć wszystkie jego trasy.<br>
+		- Kliknij na nr rampy żeby zaznaczyć wszystkie z tym samym numerem.<br>
+		- Trasa nie zniknie po odświeżeniu strony. Żeby załadować inną kliknij odpowiedni napis na górze strony.<br>
+		- Jeżeli trasa będzie źle zapisana zobaczysz o tym komunikat. Wyślij plik z trasą do mnie, dopasuję program do odczytu nowego formatu tras.
+	</div>
 	<div id="podgladTrasy"></div>
 </body>
 </html>
