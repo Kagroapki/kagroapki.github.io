@@ -345,7 +345,7 @@
     	if (!nazwa || typeof nazwa!="string"){return "BŁĄD"}
     	nazwa=nazwa.toUpperCase()
     	oczekiwanaDlugosc=oczekiwanaDlugosc||7
-    	const czastki=[]
+    	let czastki=[]
     	let nr=""
     	let pomin=0
     	for (let i=0 ; i<nazwa.length ; i++)
@@ -391,24 +391,26 @@
     			}
     		}
     	}
+    	let ciecie=czastki.length
     	for (let i=czastki.length-1 ; i>3 ; i--)
     	{
     		if (czastki[i]==" ")
     		{
-    			czastki[i]=""
+    			ciecie=i
     		}
     		else
     		{
     			break
     		}
     	}
+    	czastki=czastki.slice(0,ciecie)
     	nr=Number(nr)
     	if (nr==1){nr=0}
     	let zwrotka=""
     	for (let i=0 ; i<czastki.length ; i++)
     	{
     		zwrotka+=czastki[i]
-    		if (i<czastki.length-4 && (zwrotka.length>oczekiwanaDlugosc/3 || `${zwrotka}${nr||""}`.length>=(oczekiwanaDlugosc-2)))
+    		if (i<czastki.length-4 && czastki[i+1]!=" " && (zwrotka.length>oczekiwanaDlugosc/3 || `${zwrotka}${nr||""}`.length>=(oczekiwanaDlugosc-2)))
     		{
     			if (/[aąeęiyou]/i.test(czastki[i]))
     			{
