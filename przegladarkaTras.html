@@ -21,7 +21,7 @@
 		position: absolute;
 		background: #252525;
 		color: white;
-		top: 55vh;
+		top: 60vh;
 		left: 50%;
 		height: 10vh;
 		width: 40vh;
@@ -49,6 +49,26 @@
 		background: #1b1b1b;
 		color: white;
 		border: solid 0.2vh white;
+	}
+	#dataTrasy
+	{
+		position: relative;
+		float: left;
+		padding: 0.7vh;
+		color: white;
+	}
+	#dataGlobalna
+	{
+		position: relative;
+		float: right;
+		padding: 0.7vh;
+		color: #cfd939;
+		text-align: right;
+	}
+	.spanData
+	{
+		font-weight: 700;
+		letter-spacing: 0.1vh;
 	}
 	.wiersz
 	{
@@ -264,11 +284,37 @@
     		div.appendChild(wiersz)
     		if (i<1)
     		{
-    			const przewoznik=document.createElement("div")
-	    		przewoznik.className="przewoznik"
-	    		przewoznik.innerHTML=`Data: ${trasy[2].data||"nieznana"} &nbsp; &nbsp; kliknij żeby wczytać inną`
-	    		wiersz.onclick=reset
-	    		wiersz.appendChild(przewoznik)
+    			const dataTrasy=document.createElement("div")
+	    		dataTrasy.id="dataTrasy"
+	    		const data1 = new Date(trasy[1].data)
+	    		const data2 = new Date(trasy[trasy.length-1].data)
+	    		if (isNaN(data1.getTime()) || isNaN(data2.getTime()))
+	    		{
+	    			dataTrasy.innerHTML=`lista aktualna w nocy:<br>z: ${trasy[1].data||"data uszkodzona"}<br>na: ${trasy[trasy.length-1].data||"data uszkodzona"}`
+	    		}
+	    		else
+	    		{
+	    			dataTrasy.innerHTML=`lista aktualna w nocy:<br>&nbsp;z: ${stringDaty(data1)}<br>na: ${stringDaty(data2)}`
+	    		}
+	    		wiersz.appendChild(dataTrasy)
+	    		//
+	    		const dataGlobalna=document.createElement("div")
+	    		dataGlobalna.id="dataGlobalna"
+	    		dataGlobalna.innerHTML="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+	    		dataGlobalna.onclick=pokazCzas
+	    		wiersz.appendChild(dataGlobalna)
+	    		//
+	    		const clear=document.createElement("div")
+	    		clear.style.clear="both"
+	    		wiersz.appendChild(clear)
+	    		const wczytajInna=document.createElement("div")
+	    		wczytajInna.style.width="100%"
+	    		wczytajInna.style.textAlign="center"
+	    		wczytajInna.style.color="#f72f00"
+	    		wczytajInna.style.padding="1vh"
+	    		wczytajInna.innerHTML="kliknij żeby wczytać inną listę"
+	    		wiersz.appendChild(wczytajInna)
+	    		wczytajInna.onclick=reset
     			continue
     		}
     		const podwiersz1=document.createElement("div")
@@ -611,6 +657,53 @@
     	localStorage.setItem("zaznaczonaTrasa","0")
     	location.reload()
     }
+    async function pokazCzas()
+    {
+    	const dataGlobalna=document.getElementById("dataGlobalna")
+    	if (!dataGlobalna){return}
+	    const pobranyCzas = await fetch('https://worldtimeapi.org/api/timezone/Europe/Warsaw').then(r => r.json()).catch(r => {return 0})
+		if (!pobranyCzas){return}
+		data = new Date(pobranyCzas.datetime)
+		dataGlobalna.innerHTML=`dziś jest: <span class="spanData">${["niedziela","poniedziałek","wtorek","środa","czwartek","piątek","sobota","niedziela?"][pobranyCzas.day_of_week]}</span><br>`
+		dataGlobalna.innerHTML+=`${stringDaty(data)}<br>`
+		dataGlobalna.innerHTML+=`godzina &nbsp;&nbsp;PL: ${stringGodziny(data)}&nbsp;<br>`
+		dataGlobalna.innerHTML+=`godzina UTC: ${stringGodziny(data,"UTC")}&nbsp;<br>`
+		dataGlobalna.innerHTML+=`<span style="color:gray;">(czas pobrany z internetu)</span>`
+	    console.log(pobranyCzas)
+	}
+	function stringDaty(obiektData)
+	{
+		return `<span class="spanData">${dodajZero(obiektData.getDate())}.${dodajZero(obiektData.getMonth())}.${obiektData.getFullYear()}r.</span>`
+		function dodajZero(liczba)
+	    {
+	    	liczba=`${liczba}`
+	    	if (liczba.length<2)
+	    	{
+	    		return `0${liczba}`
+	    	}
+	    	return liczba
+	    }
+	}
+	function stringGodziny(obiektData,utc)
+	{
+		if (utc)
+		{
+			return `<span class="spanData">${dodajZero(obiektData.getUTCHours())}:${dodajZero(obiektData.getUTCMinutes())}</span>`
+		}
+		else
+		{
+			return `<span class="spanData">${dodajZero(obiektData.getHours())}:${dodajZero(obiektData.getMinutes())}</span>`
+		}
+		function dodajZero(liczba)
+	    {
+	    	liczba=`${liczba}`
+	    	if (liczba.length<2)
+	    	{
+	    		return `0${liczba}`
+	    	}
+	    	return liczba
+	    }
+	}
 </script>
 </head>
 <body onload="start()">
@@ -626,7 +719,9 @@
 		- Kliknij na swojego przewoźnika żeby zaznaczyć wszystkie jego trasy.<br>
 		- Kliknij na nr rampy żeby zaznaczyć wszystkie z tym samym numerem.<br>
 		- Trasa nie zniknie po odświeżeniu strony. Żeby załadować inną kliknij odpowiedni napis na górze strony.<br>
-		- Jeżeli trasa będzie źle zapisana zobaczysz o tym komunikat. Wyślij plik z trasą do mnie, dopasuję program do odczytu nowego formatu tras.
+		- Jeżeli trasa będzie źle zapisana zobaczysz o tym komunikat. Wyślij plik z trasą do mnie, dopasuję program do odczytu nowego formatu tras.<br><br>
+		aplikacja wykorzystuje localStorage (pamięć podręczna przeglądarki) do zapamiętywania wczytanej trasy<br>
+		aplikacja wykorzystuje World Time API do wyświetlania aktualnej daty i godziny<br>
 	</div>
 	<div id="podgladTrasy"></div>
 </body>
