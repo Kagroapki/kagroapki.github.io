@@ -4,1227 +4,725 @@
 <meta charset="UTF-8">
 <title>Przeglądarka Tras</title>
 <style type="text/css">
-    *
-    {
-        background: rgba(0,0,0,0);
-        margin: 0;
-        padding: 0;
-    }
-    body
-    {
-        background: #1b1b1b;
-        color: white;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 1.7vh;
-    }
-    #listaTras
-    {
-        position: relative;
-        left: 50%;
-        width: 47vh;
-        min-height: 89vh;
-        margin-left: -23.5vh;
-        background: black;
-        border: solid 0.4vh #2f2f2f;
-        border-top-right-radius: 1.5vh;
-        border-bottom-left-radius: 1.5vh;
-    }
-    .dystans
-    {
-        position: relative;
-        left: 50%;
-        width: 47vh;
-        height: 5vh;
-        margin-left: -23.5vh;
-    }
-    #hamburger
-    {
-        position: fixed;
-        top: 1vh;
-        right: 1vh;
-        min-height: 5vh;
-        min-width: 5vh;
-        background: rgba(119,119,119,0.5);
-        border-top-right-radius: 0.7vh;
-        border-bottom-left-radius: 0.7vh;
-    }
-    .pasHamburgera
-    {
-        width: 5.7vh;
-        height: 1.1vh;
-        margin: 0.6vh;
-        background: white;
-        border-top-right-radius: 0.7vh;
-        border-bottom-left-radius: 0.7vh;
-    }
-    .okno
-    {
-        background: #070707;
-        border: solid 0.4vh #4d4d4d;
-        border-top-right-radius: 1.5vh;
-        border-bottom-left-radius: 1.5vh;
-        box-shadow: 0 0 4vh 2vh black;
-        transition: 0.4s;
-    }
-    #menu
-    {
-        position: fixed;
-        margin-top: 15vh;
-        left: 50%;
-        width: 43vh;
-        height: 70vh;
-        margin-left: -21.5vh;
-    }
-    .kontent
-    {
-        position: absolute;
-        box-sizing: border-box;
-        text-align: center;
-        width: 100%;
-        height: 100%;
-        border: solid 1vh rgba(0,0,0,0);
-        border-top: solid 5vh rgba(0,0,0,0);
-    }
-    #podgladTrasy
-    {
-        position: fixed;
-        margin-top: 5.5vh;
-        left: 50%;
-        width: 43vh;
-        min-height: 92.5vh;
-        margin-left: -21.5vh;
-    }
-    #pytanie
-    {
-        position: fixed;
-        margin-top: 27vh;
-        left: 50%;
-        width: 48vh;
-        min-height: 46vh;
-        margin-left: -24vh;
-    }
-    #wczytaj
-    {
-        position: fixed;
-        margin-top: 27vh;
-        left: 50%;
-        width: 48vh;
-        min-height: 46vh;
-        margin-left: -24vh;
-    }
-    .zamkniete
-    {
-        top: -110vh;
-    }
-    .otwarte
-    {
-        top: 0vh;
-    }
-    .zamknij
-    {
-        position: absolute;
-        top: 1vh;
-        right: 1vh;
-        height: 4vh;
-        width: 4vh;
-        border-top-right-radius: 1vh;
-        border-bottom-left-radius: 1vh;
-        background: #4d0000;
-        border: solid 0.4vh #b11100;
-    }
-    .wierszListy
-    {
-        position: relative;
-        box-sizing: border-box;
-        width: 45vh;
-        min-height: 7vh;
-        margin: 1vh;
-        background: #111111;
-        border-top-right-radius: 1vh;
-        border-bottom-left-radius: 1vh;
-    }
-    .wierszListy div
-    {
-        position: absolute;
-        box-sizing: border-box;
-        padding: 0.4vh;
-        height: 3.25vh;
-    }
-    .nrTrasy
-    {
-        top: 0vh;
-        left: 0vh;
-        width: 5vh;
-        text-align: right;
-    }
-    .nrTrasy::before
-    {
-        content: "# "
-    }
-    .przewoznik
-    {
-        top: 0vh;
-        left: 9.5vh;
-        width: 26vh;
-        font-weight: 700;
-        color: #d9d9cf;
-    }
-    .skrotTrasy
-    {
-        top: 3.5vh;
-        left: 0vh;
-        width: 35vh;
-        color: #898989;
-    }
-    .iloscPrzystankow
-    {
-        top: 0vh;
-        right: 8vh;
-        width: 5.5vh;
-        text-align: center;
-    }
-    .iloscPrzystankow::after
-    {
-        content: " p"
-    }
-    .godzina
-    {
-        top: 0vh;
-        right: 0vh;
-        width: 7.5vh;
-        letter-spacing: 0.2vh;
-        font-weight: 700;
-        text-align: right;
-    }
-    .rampa
-    {
-        top: 3.5vh;
-        right: 0vh;
-        width: 5vh;
-        text-align: right;
-        color: #b11100;
-    }
-    .rampa::before
-    {
-        content: "R: "
-    }
-    .paka
-    {
-        top: 3.5vh;
-        right: 7.5vh;
-        width: 6vh;
-        background: #b1b1b1;
-        color: black;
-        text-align: center;
-        font-weight: 700;
-        border-bottom: solid 0.7vh black;
-    }
-    .paka::after
-    {
-        content: " t"
-    }
-    .kabina
-    {
-        position: absolute;
-        display: block;
-        padding: 0vh;
-        width: 1.7vh;
-        right: 5.5vh;
-        top: 3.5vh;
-        background: #4d7f00;
-        border-top-right-radius: 1vh;
-        border-bottom: solid 0.7vh black;
-    }
-    .kabinaSolowka
-    {
-        background: #b1b1b1;
-    }
-    .kabinaBus
-    {
-        background: #7f0000;
-    }
-    .pakaSolowka
-    {
-        width: 6vh;
-    }
-    .pakaBus
-    {
-        width: 4.5vh;
-    }
-    .pozycjaMenu
-    {
-        position: relative;
-        box-sizing: border-box;
-        width: 39vh;
-        min-height: 4vh;
-        margin: 1vh;
-        background: #111111;
-        border-top-right-radius: 0.7vh;
-        border-bottom-left-radius: 0.7vh;
-    }
-    .pozycjaMenu .tresc
-    {
-        position: relative;
-        box-sizing: border-box;
-        height: 3vh;
-        width: 34vh;
-        padding: 0.5vh;
-    }
-    #trescPytania
-    {
-        margin: 0.7vh;
-        margin-top: 1.1vh;
-        min-height: 10vh;
-        text-align: center;
-        font-weight: 700;
-    }
-    #warianty
-    {
-        position: absolute;
-        left: 2vh;
-        width: 44vh;
-        bottom: 2vh;
-    }
-    .wariant
-    {
-        position: relative;
-        box-sizing: border-box;
-        width: 100%;
-        padding: 0.7vh;
-        margin-top: 0.4vh;
-        margin-bottom: 0.4vh;
-        border-top-right-radius: 0.7vh;
-        border-bottom-left-radius: 0.7vh;
-        border: solid 0.4vh #939393;
-        text-align: center;
-        font-weight: 700;
-        background: #1b1b1b;
-    }
-    .wariant:hover
-    {
-        border: solid 0.4vh black;
-    }
-    .nrTrasyPodglad
-    {
-        position: absolute;
-        box-sizing: border-box;
-        padding: 0.4vh;
-        height: 3.25vh;
-        top: 1vh;
-        left: 1vh;
-        width: 6vh;
-        text-align: left;
-    }
-    .nrTrasyPodglad::before
-    {
-        content: "Nr: "
-    }
-    .przewoznikPodglad
-    {
-        position: absolute;
-        box-sizing: border-box;
-        padding: 0.4vh;
-        height: 3.25vh;
-        top: 4.5vh;
-        left: 1vh;
-        width: 26vh;
-        font-weight: 700;
-        color: #d9d9cf;
-    }
-    .godzinaPodglad
-    {
-        position: absolute;
-        box-sizing: border-box;
-        padding: 0.4vh;
-        height: 3.25vh;
-        top: 1vh;
-        left: 14vh;
-        width: 9vh;
-        letter-spacing: 0.2vh;
-        font-weight: 700;
-        text-align: center;
-    }
-    .rampaPodglad
-    {
-        position: absolute;
-        box-sizing: border-box;
-        padding: 0.4vh;
-        height: 3.25vh;
-        top: 4.5vh;
-        right: 8vh;
-        width: 5vh;
-        text-align: right;
-        color: #b11100;
-    }
-    .rampaPodglad::before
-    {
-        content: "R: "
-    }
-    .tonarzPodglad
-    {
-        position: absolute;
-        box-sizing: border-box;
-        padding: 0.4vh;
-        height: 3.25vh;
-        top: 1vh;
-        right: 8vh;
-        width: 6vh;
-        color: #b1b1b1;
-        text-align: right;
-        font-weight: 700;
-    }
-    .tonarzPodglad::after
-    {
-        content: " t"
-    }
-    #przystanki
-    {
-        position: absolute;
-        box-sizing: border-box;
-        width: 41vh;
-        left: 1vh;
-        min-height: 10vh;
-        top: 9vh;
-        background: #070707;
-    }
-    .przystanek
-    {
-        position: relative;
-        box-sizing: border-box;
-        width: 100%;
-        height: 4.7vh;
-        margin-top: 0.7vh;
-        margin-bottom: 0.7vh;
-        background: #111111;
-        border-top-right-radius: 0.7vh;
-        border-bottom-left-radius: 0.7vh;
-    }
-    .godzinaPrzystanek
-    {
-        position: absolute;
-        top: 0.5vh;
-        right: 0.1vh;
-        width: 7vh;
-        letter-spacing: 0.2vh;
-        font-weight: 700;
-        text-align: center;
-        background: #111111;
-    }
-    .nazwaPrzystanek
-    {
-        position: absolute;
-        top: 0.5vh;
-        left: 5.7vh;
-        width: 35vh;
-    }
-    .nrPrzystanek
-    {
-        position: absolute;
-        top: 0.5vh;
-        left: 0.5vh;
-        width: 2.2vh;
-    }
-    .typPrzystanek
-    {
-        position: absolute;
-        top: 0.5vh;
-        left: 2.7vh;
-        width: 2.7vh;
-        text-align: center;
-    }
-    .tonarzPrzystanek
-    {
-        position: absolute;
-        top: 2.7vh;
-        left: 0.5vh;
-        width: 5vh;
-        color: #757575;
-        font-size: 1.5vh;
-    }
-    .tonarzPrzystanek::after
-    {
-        content: "kg"
-    }
-    .tonarzPasekPrzystanek
-    {
-        position: absolute;
-        top: 2.7vh;
-        left: 5.7vh;
-        width: 30vh;
-        color: #757575;
-        font-size: 1.5vh;
-    }
-    .moja
-    {
-        position: fixed;
-        left: 1vh;
-        bottom: 1vh;
-        width: 4vh;
-        height: 4vh;
-        border-radius: 50%;
-        background: #114d00;
-        transition: 0.3s;
-    }
-    .zamknieta
-    {
-        margin-left: -5vh;
-    }
-    .otwarta
-    {
-        margin-left: 0vh;
-    }
+	*
+	{
+		background: rgba(0,0,0,0);
+		margin: 0;
+		padding: 0;
+	}
+	body
+	{
+		background: black;
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 1.7vh;
+	}
+	input
+	{
+		position: absolute;
+		background: #252525;
+		color: white;
+		top: 60vh;
+		left: 50%;
+		height: 10vh;
+		width: 40vh;
+		margin-left: -20vh;
+	}
+	#trasy
+	{
+		position: absolute;
+		top: 1vh;
+		width: 48vh;
+		left: 50%;
+		margin-left: -24vh;
+		min-height: 10vh;
+		background: #1b1b1b;
+		color: white;
+	}
+	#podgladTrasy
+	{
+		position: fixed;
+		top: -150vh;
+		width: 48vh;
+		left: 50%;
+		margin-left: -24vh;
+		min-height: 10vh;
+		background: #1b1b1b;
+		color: white;
+		border: solid 0.2vh white;
+	}
+	#dataTrasy
+	{
+		position: relative;
+		float: left;
+		padding: 0.7vh;
+		color: white;
+	}
+	#dataGlobalna
+	{
+		position: relative;
+		float: right;
+		padding: 0.7vh;
+		color: #cfd939;
+		text-align: right;
+	}
+	.spanData
+	{
+		font-weight: 700;
+		letter-spacing: 0.1vh;
+	}
+	.wiersz
+	{
+		width: 47vh;
+		min-height: 5.4vh;
+		margin: 0.5vh;
+		background: black;
+	}
+	.podwiersz
+	{
+		width: 100%;
+		min-height: 3vh;
+	}
+	.numer
+	{
+		position: relative;
+		float: left;
+		padding: 0.4vh;
+		color: #7f7f7f;
+	}
+	.numerZaznaczony
+	{
+		position: relative;
+		float: left;
+		padding: 0.4vh;
+		color: gold;
+	}
+	.przewoznik
+	{
+		position: relative;
+		float: left;
+		padding: 0.4vh;
+		margin-left: 2vh;
+		color: #e3e3e3;
+		font-weight: 700;
+	}
+	.nazwa
+	{
+		position: relative;
+		float: left;
+		padding: 0.4vh;
+		color: #7f7f7f;
+	}
+	.waga
+	{
+		position: relative;
+		float: left;
+		padding: 0.4vh;
+		margin-left: 0.5vh;
+		color: #b1b1b1;
+		font-weight: 700;
+	}
+	.godzina
+	{
+		position: relative;
+		float: right;
+		padding: 0.4vh;
+		color: white;
+		font-weight: 700;
+		letter-spacing: 0.2vh;
+	}
+	.rampa
+	{
+		position: relative;
+		float: right;
+		padding: 0.4vh;
+		color: #b11100;
+		font-weight: 700;
+	}
+	.rampaZaznaczona
+	{
+		position: relative;
+		float: right;
+		padding: 0.4vh;
+		color: gold;
+		font-weight: 700;
+	}
+	.zamknij
+	{
+		width: 100%;
+		padding: 0.4vh;
+		text-align: center;
+		font-weight: 700;
+		color: #f72f00;
+		letter-spacing: 0.2vh;
+	}
+	.przystanek
+	{
+		width: 47vh;
+		min-height: 2.7vh;
+		margin: 0.5vh;
+		background: black;
+	}
+	.przedzial
+	{
+		width: 20%;
+		box-sizing: border-box;
+		border: solid 0.4vh white;
+		text-align: center;
+	}
+	.klucze
+	{
+		position: relative;
+		width: 100%;
+		padding: 0.4vh;
+		color: #7f7f7f;
+	}
 </style>
 <script>
-    let listyTras=JSON.parse(localStorage.getItem("listyTras")||"0")||[]
-    let zaznaczona=0
-    let mojeTrasy=JSON.parse(localStorage.getItem("mojeTrasy")||"0")||[]
-    let dostepneRampy=[1,2,3,4,5,6,7]
-    let znacznik=Number(localStorage.getItem("znacznik")||"1")||1
-    let znacznikListy=0
-    let moja=0
-    function start()
+	const dostepneRampy=[1,2,3,4,5,6,7]
+	function start()
+	{
+		const wczytaneTrasa=JSON.parse(localStorage.getItem("wczytaneTrasa"))
+		if (wczytaneTrasa && typeof wczytaneTrasa==="object")
+		{
+			pokazTrasy(wczytaneTrasa)
+			const zaznaczonaTrasa=JSON.parse(localStorage.getItem("zaznaczonaTrasa"))
+			if (zaznaczonaTrasa && typeof zaznaczonaTrasa==="object")
+			{
+				pokazTrase(zaznaczonaTrasa)
+			}
+			return
+		}
+		else
+		{
+			document.getElementById('fileInput').addEventListener('change',analizaPlikow)
+		}
+	}
+    function analizaPlikow(pliki)
     {
-        document.getElementById("hamburger").onclick=menu.hamburger
-        document.getElementById("menu").querySelector('.zamknij').onclick=menu.zamknij
-        document.getElementById("wybierak").addEventListener('change',wczytywaniePliku)
-        document.getElementById("podgladTrasy").querySelector('.zamknij').onclick=zamknijPodglad
-        document.getElementById("wczytaj").querySelector('.zamknij').onclick = new Function(`document.getElementById("wczytaj").className="okno zamkniete"`)
-        document.querySelector(".moja").onclick=pokazMoja
-        menu.pokazListe(0)
+    	if (pliki.target.files.length<1)
+    	{
+    		return alert("nie załadowano żadnego pliku")
+    	}
+    	for (let plik of pliki.target.files)
+    	{
+    		if (!plik){continue}
+    		const reader = new FileReader
+    		reader.onload=analizaPliku
+    		reader.readAsText(plik)
+    	}
     }
-    function wczytywaniePliku(pliki)
+    function analizaPliku(plik)
     {
-        document.getElementById("wczytaj").className="okno zamkniete"
-        if (pliki.target.files[1])
+    	let typZapisu=0
+    	const tekst = plik.target.result
+    	const wiersze=tekst.split("\r\n")
+    	if (wiersze[0]==="Lp.,Przewoźnik,Pl. data załadunku,Lista przystanków" || wiersze[0]==="Lp.,Nr przewoźnika,Pl. data załadunku,Lista przystanków")
+    	{
+    		typZapisu=0
+    	}
+    	else if (wiersze[0]=="Lp.,Pl. data załadunku,Przewoźnik,Lista przystanków" || wiersze[0]=="Lp.,Pl. data załadunku,Nr przewoźnika,Lista przystanków")
+    	{
+    		typZapisu=1
+    	}
+    	else
+    	{
+    		return alert("plik nie ma odpowiedniej konstrukcji")
+    	}
+    	const trasy=[]
+        for (i=1 ; i<wiersze.length ; i++)
         {
-            menu.zapytaj("program może wczytać tylko jeden plik na raz")
+        	if (wiersze[i].length<0){continue}
+        	const trasa=(wiersze[i].match([/(?<nrTrasy>(\d)+),(?<przewoznik>[^,]+),(?<data>\d{4}-\d{2}-\d{2}) (?<godzina>\d{2}:\d{2}),(?<trasa>.+)/,/(?<nrTrasy>(\d)+),(?<data>\d{4}-\d{2}-\d{2}) (?<godzina>\d{2}:\d{2}),(?<przewoznik>[^,]+),(?<trasa>.+)/][typZapisu])||{}).groups
+        	if (!trasa || typeof trasa!="object"){console.log(`odrzucono trasę: ${wiersze[i]}`);continue}
+        	trasa.nrTrasy=Number(trasa.nrTrasy)
+        	if (!(trasa.nrTrasy>0)){alert("błąd numeru trasy");continue}
+        	const punkty=trasa.trasa.match(/\[\d{2}:\d{2}\][^\[\]-]+(?:\[[^-]+?\])?\[[^-]*?\/[\d\.,]+(?:kg)?\](?:-)?/g)
+        	if (punkty.length<1){alert("błąd konstrukcji trasy");continue}
+        	trasa.trasa=[]
+        	for (let j=0 ; j<punkty.length ; j++)
+        	{
+        		const punkt=(punkty[j].match(/\[(?<godzina>\d{2}:\d{2})\](?<nazwa>[^\[\]-]+)(?:\[(?<typ>[^-]+?)\])?\[[^-]*?\/(?<waga>[\d\.,]+)(?:kg)?\]/)||{}).groups
+        		if (!punkt || typeof punkt!="object"){console.log(`odrzucono punkt trasy: ${punkty[j]}`);continue}
+        		if (!punkt.nazwa || !punkt.godzina){alert("błąd konstrunkcji punktu trasy");continue}
+        		punkt.waga=Number(punkt.waga)||0
+        		trasa.trasa.push(punkt)
+        	}
+        	trasa.waga=sumaWagi(trasa)
+        	trasy[Number(trasa.nrTrasy)]=trasa
         }
-        if (pliki.target.files[0])
-        {
-            const reader = new FileReader
-            reader.readAsText(pliki.target.files[0])
-            reader.onload=(obiektPlik)=>{analizaPliku(obiektPlik,pliki.target.files[0].name.slice(pliki.target.files[0].name.length-4))}
-        }
-        else
-        {
-            menu.zapytaj("nie załadowano pliku")
-            return console.log(`nie załadowano pliku`)
-        }
+        localStorage.setItem("wczytaneTrasa",JSON.stringify(trasy))
+        pokazTrasy(trasy)
+        function sumaWagi(trasa)
+	    {
+	    	if (!Array.isArray(trasa.trasa)){return "BŁĄD"}
+	    	if (trasa.trasa.length===1){return trasa.trasa[0].waga||0}
+	    	let zwrotka=0
+	    	for (let i=0 ; i<trasa.trasa.length ; i++)
+	    	{
+	    		zwrotka+=trasa.trasa[i].waga
+	    	}
+	    	return Math.round(zwrotka/100)/10
+	    }
     }
-    function analizaPliku(obiektPlik,typ)
+    function pokazTrasy(trasy)
     {
-        let listaTras=0
-        if (typ===".tsv")
-        {
-            listaTras=obiektowanieTabeli(tabelowaniePliku(obiektPlik,"\t"))
-        }
-        else if (typ===".csv")
-        {
-            listaTras=obiektowanieTabeli(tabelowaniePliku(obiektPlik,","))
-        }
-        else
-        {
-            menu.zapytaj("plik ma nieobsługiwane rozszerzenie")
-            console.log(`nieznane rozszerzenie pliku: ${pliki.target.files[0].name.slice(pliki.target.files[0].name.length-4)}`)
-        }
-        listyTras.unshift({znacznik:znacznik,zaznaczona:0,moja:0,lista:listaTras})
-        nowyZnacznik()
-        listyTras=listyTras.slice(0,6)
-        localStorage.setItem("listyTras",JSON.stringify(listyTras))
-        menu.pokazListe(0)
-        function tabelowaniePliku(obiektPlik,separator)
-        {
-            const plik=obiektPlik.target.result
-            const zwrotka=plik.split("\r\n")
-            for (let i=0 ; i<zwrotka.length ; i++)
-            {
-                zwrotka[i]=zwrotka[i].split(separator)
-            }
-            return zwrotka
-        }
-        function obiektowanieTabeli(tabela)
-        {
-            const naglowki=[]
-            for (let i=0 ; i<tabela[0].length ; i++)
-            {
-                const pole=tabela[0][i]
-                if (/(?:^| )lp(?:\.| |$)|(?:^| )nr(?:\.| )?$/i.test(pole))
-                {
-                    naglowki[i]="nr"
-                }
-                else if (/(?:^| )przewo[zź]nika?(?:\.| |$)/i.test(pole))
-                {
-                    naglowki[i]="przewoznik"
-                }
-                else if (/(?:^| )data(?:\.| |$)/i.test(pole))
-                {
-                    naglowki[i]="data"
-                }
-                else if (/(?:^| )(?:lista|przystanki?[oó]?w?|przebieg)(?:\.| |$)/i.test(pole))
-                {
-                    naglowki[i]="przystanki"
-                }
-            }
-            if (!naglowki.includes("nr"))
-            {
-                console.log("w pliku nie ma kolumny z numerami")
-                menu.zapytaj("plik nie zawiera nummerów tras, zostaną ponumerowane automatycznie")
-            }
-            if (!naglowki.includes("przewoznik"))
-            {
-                return menu.zapytaj("nie znaleziono kolumny z nazwami przewoźników")
-            }
-            if (!naglowki.includes("data"))
-            {
-                return menu.zapytaj("nie znaleziono kolumny z datą tras")
-            }
-            if (!naglowki.includes("przystanki"))
-            {
-                return menu.zapytaj("nie znaleziono kolumny z przystankami trasy")
-            }
-            const zwrotka=[[Date.now()+604800000,0],["NIEZNANY"],[]]
-            for (let i=1 ; i<tabela.length ; i++)
-            {
-                let t=[]
-                let nr=0
-                let data=0
-                for (let j=0 ; j<naglowki.length ; j++)
-                {
-                    const pole=tabela[i][j]
-                    if (!naglowki[j]){continue}
-                    else if (naglowki[j]=="nr")
-                    {
-                        nr=Number(pole)
-                    }
-                    else if (naglowki[j]=="przewoznik")
-                    {
-                        if (pole.length>17)
-                        {
-                            t[0]=0
-                        }
-                        else
-                        {
-                            t[0]=zwrotka[1].indexOf(pole)
-                            if (!(t[0]>=0))
-                            {
-                                t[0]=zwrotka[1].length
-                                zwrotka[1][t[0]]=pole
-                            }
-                        }
-                    }
-                    else if (naglowki[j]=="data")
-                    {
-                        data = new Date(pole)
-                        if (!isNaN(data.getTime()))
-                        {
-                            t[1]=`${new Function(`const e="${data.getHours()}";if(e.length<2){return "0"+e}return e`)()}${new Function(`const e="${data.getMinutes()}";if(e.length<2){return "0"+e}return e`)()}`
-                        }
-                    }
-                    else if (naglowki[j]=="przystanki")
-                    {
-                        t[2]=analizaPrzystankow(pole)
-                    }
-                }
-                t=`${new Function(`let e="${Number(t[0])||0}";for(let i=0;i<2;i++){if(e.length<2){e="0"+e}}return e`)()}${t[1]}${t[2]}`
-                if (data)
-                {
-                    if (!isNaN(data.getTime()))
-                    {
-                        if (data<zwrotka[0][0])
-                        {
-                            zwrotka[0][0]=data
-                        }
-                        if (data>zwrotka[0][1])
-                        {
-                            zwrotka[0][1]=data
-                        }
-                    }
-                }
-                if (!(Number(nr)>0))
-                {
-                    nr=i
-                }
-                zwrotka[2][nr]=t
-            }
-            for (let i=0 ; i<zwrotka[2].length ; i++)
-            {
-                zwrotka[2][i]=zwrotka[2][i]||0
-            }
-            const e=zwrotka[1]
-            zwrotka[1]=""
-            for (let i=0 ; i<e.length ; i++)
-            {
-                zwrotka[1]+=`${e[i].replace("?","")}?`
-            }
-            if (Number(zwrotka[0][0]) && zwrotka[0][0] < (Date.now()+432000000))
-            {
-                const data = new Date(zwrotka[0][0])
-                zwrotka[0][0]=`${new Function(`const e="${data.getDate()}";if(e.length<2){return "0"+e}return e`)()}${new Function(`const e="${data.getMonth()+1}";if(e.length<2){return "0"+e}return e`)()}${data.getFullYear()}`
-            }
-            else
-            {
-                zwrotka[0][0]="XXXXXXXX"
-            }
-            if (Number(zwrotka[0][1]) && zwrotka[0][1] > 0)
-            {
-                const data = new Date(zwrotka[0][1])
-                zwrotka[0][1]=`${new Function(`const e="${data.getDate()}";if(e.length<2){return "0"+e}return e`)()}${new Function(`const e="${data.getMonth()+1}";if(e.length<2){return "0"+e}return e`)()}${data.getFullYear()}`
-            }
-            else
-            {
-                zwrotka[0][1]="XXXXXXXX"
-            }
-            zwrotka[0]=`${zwrotka[0][0]}${zwrotka[0][1]}`
-            return zwrotka
-        }
-        function analizaPrzystankow(tekst)
-        {
-            let zwrotka=""
-            const punkty=tekst.match(/\[\d{2}:\d{2}\][^\[\]-]+(?:\[[^-]+?\])?\[[^-]*?\/[\d\.,]+(?:kg)?\](?:-)?/g)
-            if ((punkty||[]).length<1){menu.zapytaj("błąd konstrukcji trasy");return []}
-            for (let j=0 ; j<punkty.length ; j++)
-            {
-                const reg=(punkty[j].match(/\[(?<godzina>\d{2}):(?<minuta>\d{2})\](?<nazwa>[^\[\]-]+)(?:\[(?<typ>[^-]+?)\])?\[[^-]*?\/(?<waga>[\d\.,]+)(?:kg)?\]/)||{}).groups
-                if (!reg || typeof reg!="object"){console.log(`odrzucono punkt trasy: ${punkty[j]}`);continue}
-                if (!reg.nazwa || !reg.godzina){menu.zapytaj("błąd konstrunkcji punktu trasy");continue}
-                const punkt=`${reg.godzina||"XX"}${reg.minuta||"XX"}${new Function(`let e="${Math.round((Number(reg.waga)||0)/10)}";for(let i=0;i<3;i++){if(e.length<3){e="0"+e}}return e`)()}${reg.typ||"X"}${usunZnak(usunDuplikatZnaku(usunZnak(reg.nazwa,"?")," ")," ","_")}?`
-                zwrotka+=punkt
-            }
-            return zwrotka
-        }
-    }
-    const menu=
-    {
-        nr:0,
-        hamburger:function()
-        {
-            if (document.getElementById("menu").className=="okno otwarte")
-            {
-                return menu.zamknij()
-            }
-            menu.otworz()
-        },
-        otworz:function()
-        {
-            if (document.getElementById("pytanie").className!="okno otwarte")
-            {
-                menu.menu[menu.nr]()
-                document.getElementById("menu").className="okno otwarte"
-            }
-        },
-        zamknij:function()
-        {
-            document.getElementById("menu").querySelector('.kontent').innerHTML=""
-            document.getElementById("menu").className="okno zamkniete"
-        },
-        pokazListe:function(znacznik)
-        {
-            let lista=0
-            if (!znacznik)
-            {
-                lista=JSON.parse(JSON.stringify(listyTras[0]||0))
-            }
-            else
-            {
-                for (let i=0 ; i<listyTras.length ; i++)
-                {
-                    if (listyTras[i].znacznik==znacznik)
-                    {
-                        lista=JSON.parse(JSON.stringify(listyTras[i]||0))
-                        break
-                    }
-                }
-            }
-            if (!lista){return menu.otworz()}
-            znacznikListy=lista.znacznik
-            const wierszListy=document.getElementById('wierszListy');
-            //
-            lista.lista[1]=lista.lista[1].split("?")
-            for (let i=0 ; i<lista.lista[2].length ; i++)
-            {
-                const trasa=lista.lista[2][i]
-                const obiektTrasa={}
-                if (!trasa){continue}
-                obiektTrasa.data=lista[0]
-                obiektTrasa.przystanki=trasa.slice(6,trasa.length-1).split("?")
-                obiektTrasa.waga=0
-                let przystanekMax=[0,0]
-                for (let j=0 ; j<(obiektTrasa.przystanki||[]).length ; j++)
-                {
-                    const e=obiektTrasa.przystanki[j]
-                    const przystanek={}
-                    przystanek.godzina=`${e.slice(0,2)}:${e.slice(2,4)}`
-                    przystanek.waga=(Number(e.slice(4,7))||40)*10
-                    przystanek.nazwa=e.slice(8)
-                    przystanek.typ=e.slice(7,8)
-                    obiektTrasa.waga+=przystanek.waga
-                    obiektTrasa.przystanki[j]=przystanek
-                    if (j>0 && j<obiektTrasa.przystanki.length-1)
-                    {
-                        if (przystanek.waga>przystanekMax[1])
-                        {
-                            przystanekMax[1]=przystanek.waga
-                            przystanekMax[0]=j
-                        }
-                    }
-                }
-                obiektTrasa.nr=i
-                obiektTrasa.przewoznik=lista.lista[1][Number(trasa.slice(0,2))||0]||"???"
-                obiektTrasa.godzina=`${trasa.slice(2,4)}:${trasa.slice(4,6)}`
-                const klonWierszaListy=document.createElement("div")
-                klonWierszaListy.className="wierszListy"
-                klonWierszaListy.innerHTML=wierszListy.innerHTML
-                //
-                klonWierszaListy.querySelector(".nrTrasy").innerHTML=`${obiektTrasa.nr}`
-                klonWierszaListy.querySelector(".przewoznik").innerHTML=`${obiektTrasa.przewoznik}`
-                klonWierszaListy.querySelector(".iloscPrzystankow").innerHTML=obiektTrasa.przystanki.length
-                klonWierszaListy.querySelector(".godzina").innerHTML=obiektTrasa.godzina
-                klonWierszaListy.querySelector(".rampa").innerHTML=`${dostepneRampy[(obiektTrasa.nr-1)%dostepneRampy.length]}`
-                klonWierszaListy.querySelector(".paka").innerHTML=`${Math.round(obiektTrasa.waga/100)/10}`
-                klonWierszaListy.querySelector(".skrotTrasy").innerHTML=`${skrot(obiektTrasa.przystanki[0].nazwa,22)} &nbsp;${skrot(obiektTrasa.przystanki[przystanekMax[0]].nazwa,5)} &nbsp;${skrot(obiektTrasa.przystanki[obiektTrasa.przystanki.length-1].nazwa,7)}`
-                if (obiektTrasa.waga<3550)
-                {
-                    klonWierszaListy.querySelector(".paka").className="paka pakaBus"
-                    klonWierszaListy.querySelector(".kabina").className="kabina kabinaBus"
-                }
-                else
-                {
-                    klonWierszaListy.querySelector(".paka").className="paka pakaSolowka"
-                    klonWierszaListy.querySelector(".kabina").className="kabina kabinaSolowka"
-                }
-                klonWierszaListy.onclick = new Function(`menu.pokazTrase(${i},${JSON.stringify(obiektTrasa)})`)
-                if (lista.zaznaczona && i==lista.zaznaczona)
-                {
-                    setTimeout(()=>{menu.pokazTrase(i,obiektTrasa)},700)
-                }
-                document.getElementById("listaTras").appendChild(klonWierszaListy)
-            }
-        },
-        pokazTrase:function(nrNaLiscie,trasa,moja)
-        {
-            if (!moja)
-            {
-                zaznaczTrase(nrNaLiscie,trasa)
-            }
-            //
-            if (document.getElementById("pytanie").className=="okno otwarte"){return}
-            menu.zamknij()
-            const div=document.getElementById("podgladTrasy")
-            if (!trasa){console.log("błąd");return 0}
-            div.querySelector(".nrTrasyPodglad").innerHTML=trasa.nr
-            div.querySelector(".godzinaPodglad").innerHTML=trasa.godzina
-            div.querySelector(".przewoznikPodglad").innerHTML=trasa.przewoznik
-            div.querySelector(".tonarzPodglad").innerHTML=Math.round(trasa.waga/100)/10
-            div.querySelector(".rampaPodglad").innerHTML=`${dostepneRampy[(trasa.nr-1)%dostepneRampy.length]}`
-            const przystanki=document.getElementById("przystanki")
-            przystanki.innerHTML=""
-            for (let i=0 ; i<trasa.przystanki.length ; i++)
-            {
-                const przystanek=document.createElement("div")
-                przystanek.className="przystanek"
-                const nrPrzystanek=document.createElement("div")
-                nrPrzystanek.className="nrPrzystanek"
-                nrPrzystanek.innerHTML=`${(i+1)}`
-                przystanek.appendChild(nrPrzystanek)
-                const typPrzystanek=document.createElement("div")
-                typPrzystanek.className="typPrzystanek"
-                if (trasa.przystanki[i].typ=="X")
-                {
-                    typPrzystanek.innerHTML=`[&nbsp;&nbsp;]`
-                }
-                else
-                {
-                    typPrzystanek.innerHTML=`[${trasa.przystanki[i].typ}]`
-                }
-                przystanek.appendChild(typPrzystanek)
-                const nazwaPrzystanek=document.createElement("div")
-                nazwaPrzystanek.className="nazwaPrzystanek"
-                nazwaPrzystanek.innerHTML=`${usunZnak(trasa.przystanki[i].nazwa,"_"," ")}`
-                przystanek.appendChild(nazwaPrzystanek)
-                const godzinaPrzystanek=document.createElement("div")
-                godzinaPrzystanek.className="godzinaPrzystanek"
-                godzinaPrzystanek.innerHTML=trasa.przystanki[i].godzina
-                przystanek.appendChild(godzinaPrzystanek)
-                przystanki.appendChild(przystanek)
-                const tonarzPrzystanek=document.createElement("div")
-                tonarzPrzystanek.className="tonarzPrzystanek"
-                tonarzPrzystanek.innerHTML=`${trasa.przystanki[i].waga}`
-                przystanek.appendChild(tonarzPrzystanek)
-                const tonarzPasekPrzystanek=document.createElement("div")
-                tonarzPasekPrzystanek.className="tonarzPasekPrzystanek"
-                for (let a=0 ; a<trasa.przystanki[i].waga/20 ; a++)
-                {
-                    tonarzPasekPrzystanek.innerHTML+="!"
-                }
-                przystanek.appendChild(tonarzPasekPrzystanek)
-            }
-            document.getElementById("podgladTrasy").className="okno otwarte"
-        },
-        zapytaj:function(pytanie,warianty)
-        {
-            document.getElementById("trescPytania").innerHTML=pytanie
-            if ((warianty||[]).length<1)
-            {
-                warianty=[{tekst:"ok",funkcja:""}]
-            }
-            const div=document.getElementById("warianty")
-            div.innerHTML=""
-            for (wariant of warianty)
-            {
-                const w=document.createElement("div")
-                w.className="wariant"
-                w.innerHTML=wariant.tekst
-                if (wariant.kolor)
-                {
-                    w.style.background=wariant.kolor
-                }
-                w.onclick = ()=>{setTimeout(new Function(wariant.funkcja||"return 0"),400);setTimeout(()=>{document.getElementById("pytanie").className="okno zamkniete"},700)}
-                div.appendChild(w)
-            }
-            document.getElementById("pytanie").className="okno otwarte"
-        },
-        menu:
-        [
-            function()
-            {
-                const div=document.getElementById("menu").querySelector('.kontent')
-                div.innerHTML=""
-                if (true)
-                {
-                    const pozycjaMenu=document.createElement("div")
-                    pozycjaMenu.className="pozycjaMenu"
-                    const tresc=document.createElement("div")
-                    tresc.className="tresc"
-                    tresc.style.width="100%"
-                    pozycjaMenu.appendChild(tresc)
-                    tresc.innerHTML="wczytaj listę"
-                    pozycjaMenu.onclick = new Function(`document.getElementById("wczytaj").className="okno otwarte";setTimeout(menu.zamknij,500)`)
-                    div.appendChild(pozycjaMenu)
-                }
-                if (!moja && znacznikListy && zaznaczona)
-                {
-                    const pozycjaMenu=document.createElement("div")
-                    pozycjaMenu.className="pozycjaMenu"
-                    const tresc=document.createElement("div")
-                    tresc.className="tresc"
-                    tresc.style.width="100%"
-                    pozycjaMenu.appendChild(tresc)
-                    tresc.innerHTML="oznacz jako moja"
-                    pozycjaMenu.onclick = new Function(`oznaczJakoMoja();setTimeout(menu.zamknij,500)`)
-                    div.appendChild(pozycjaMenu)
-                }
-                if (moja)
-                {
-                    const pozycjaMenu=document.createElement("div")
-                    pozycjaMenu.className="pozycjaMenu"
-                    const tresc=document.createElement("div")
-                    tresc.className="tresc"
-                    tresc.style.width="100%"
-                    pozycjaMenu.appendChild(tresc)
-                    tresc.innerHTML="usuń trasę z listy moich"
-                    pozycjaMenu.onclick = new Function(`usunZmoja();setTimeout(menu.zamknij,500)`)
-                    div.appendChild(pozycjaMenu)
-                }
-                if (true)
-                {
-                    const pozycjaMenu=document.createElement("div")
-                    pozycjaMenu.className="pozycjaMenu"
-                    const tresc=document.createElement("div")
-                    tresc.className="tresc"
-                    tresc.style.width="100%"
-                    pozycjaMenu.appendChild(tresc)
-                    tresc.innerHTML="info"
-                    pozycjaMenu.onclick = new Function(`menu.zapytaj("jeszcze dodam filtrowanie tras, sprawdzanie wcześniejszych list i tras zapisanych jako moje");setTimeout(menu.zamknij,500)`)
-                    div.appendChild(pozycjaMenu)
-                }
-            },
-            function()
-            {
-                const div=document.getElementById("menu").querySelector('.kontent')
-                div.innerHTML=""
-                if (true)
-                {
-                    const pozycjaMenu=document.createElement("div")
-                    pozycjaMenu.className="pozycjaMenu"
-                    pozycjaMenu.innerHTML="anuluj"
-                    pozycjaMenu.onclick = new Function("menu.nr=0;menu.otworz()")
-                    div.appendChild(pozycjaMenu)
-                }
-                if (true)
-                {
-                    const input=document.getElementById("guzikWczytania")
-                    const klonImput=input.content.cloneNode(true);
-                    div.appendChild(klonImput)
-                }
-            },
-        ]
+    	const div=document.getElementById("trasy")
+    	div.innerHTML=""
+    	const przewoznicy=[]
+    	for (let i=1 ; i<trasy.length ; i++)
+    	{
+    		if (!trasy[i].przewoznik){continue}
+    		if (!przewoznicy.includes(trasy[i].przewoznik))
+    		{
+    			przewoznicy.push(trasy[i].przewoznik)
+    		}
+    	}
+    	for (let i=0 ; i<trasy.length ; i++)
+    	{
+    		const wiersz=document.createElement("div")
+    		wiersz.className="wiersz"
+    		div.appendChild(wiersz)
+    		if (i<1)
+    		{
+    			const dataTrasy=document.createElement("div")
+	    		dataTrasy.id="dataTrasy"
+	    		const data1 = new Date(trasy[1].data)
+	    		const data2 = new Date(trasy[trasy.length-1].data)
+	    		if (isNaN(data1.getTime()) || isNaN(data2.getTime()))
+	    		{
+	    			dataTrasy.innerHTML=`lista aktualna w nocy:<br>z: ${trasy[1].data||"data uszkodzona"}<br>na: ${trasy[trasy.length-1].data||"data uszkodzona"}`
+	    		}
+	    		else
+	    		{
+	    			dataTrasy.innerHTML=`lista aktualna w nocy:<br>&nbsp;z: ${stringDaty(data1)}<br>na: ${stringDaty(data2)}`
+	    		}
+	    		wiersz.appendChild(dataTrasy)
+	    		//
+	    		const dataGlobalna=document.createElement("div")
+	    		dataGlobalna.id="dataGlobalna"
+	    		dataGlobalna.innerHTML="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+	    		dataGlobalna.onclick=pokazCzas
+	    		wiersz.appendChild(dataGlobalna)
+	    		//
+	    		const clear=document.createElement("div")
+	    		clear.style.clear="both"
+	    		wiersz.appendChild(clear)
+	    		const wczytajInna=document.createElement("div")
+	    		wczytajInna.style.width="100%"
+	    		wczytajInna.style.textAlign="center"
+	    		wczytajInna.style.color="#f72f00"
+	    		wczytajInna.style.padding="1vh"
+	    		wczytajInna.innerHTML="kliknij żeby wczytać inną listę"
+	    		wiersz.appendChild(wczytajInna)
+	    		wczytajInna.onclick=reset
+    			continue
+    		}
+    		const podwiersz1=document.createElement("div")
+    		podwiersz1.className="podwiersz"
+    		const podwiersz2=document.createElement("div")
+    		podwiersz2.className="podwiersz"
+    		wiersz.appendChild(podwiersz1)
+    		wiersz.appendChild(podwiersz2)
+    		//
+    		const numer=document.createElement("div")
+    		numer.className=`numer przewoznik_${(przewoznicy.indexOf(trasy[i].przewoznik)+1)||"X"}`
+    		if (trasy[i].nrTrasy<10)
+    		{
+    			numer.innerHTML=`<span style="opacity:0">0</span>#${trasy[i].nrTrasy}`
+    		}
+    		else
+    		{
+    			numer.innerHTML=`#${trasy[i].nrTrasy}`
+    		}
+    		podwiersz1.appendChild(numer)
+    		//
+    		const przewoznik=document.createElement("div")
+    		przewoznik.className="przewoznik"
+    		przewoznik.innerHTML=`${trasy[i].przewoznik||"PRZEWOŹNIK?"}`
+    		przewoznik.onclick = new Function(`zaznaczPrzewoznika(${(przewoznicy.indexOf(trasy[i].przewoznik)+1)||"0"})`)
+    		podwiersz1.appendChild(przewoznik)
+    		//
+    		const godzina=document.createElement("div")
+    		godzina.className="godzina"
+    		godzina.innerHTML=(trasy[i].godzina||"??:??")
+    		podwiersz1.appendChild(godzina)
+    		//
+    		const nazwa=document.createElement("div")
+    		nazwa.className="nazwa"
+    		nazwa.innerHTML=`${skrotNazwyTrasy(trasy[i])}`
+    		nazwa.onclick = new Function(`pokazTrase(${JSON.stringify(trasy[i])})`)
+    		podwiersz2.appendChild(nazwa)
+    		//
+    		const waga=document.createElement("div")
+    		waga.className="waga"
+    		waga.innerHTML=`${trasy[i].waga}t`
+    		podwiersz2.appendChild(waga)
+    		//
+    		const rampa=document.createElement("div")
+    		const nrRampy=dostepneRampy[(trasy[i].nrTrasy-1)%dostepneRampy.length]
+    		rampa.onclick = new Function(`zaznaczRampy(${nrRampy})`)
+    		rampa.className=`rampa rampa_${nrRampy}`
+    		rampa.innerHTML=`R: ${nrRampy}`
+    		podwiersz2.appendChild(rampa)
+    	}
+    	function skrotNazwyTrasy(trasa)
+	    {
+	    	if (!Array.isArray(trasa.trasa)){return "BŁĄD"}
+	    	if (trasa.trasa.length===1){return trasa.trasa[0].nazwa}
+	    	if (trasa.trasa.length===2){return `${trasa.trasa[0].nazwa} > ${skrot(trasa.trasa[1].nazwa)}`}
+	    	const max=[0,0]
+	    	for (let i=1 ; i<trasa.trasa.length-1 ; i++)
+	    	{
+	    		if (Number(trasa.trasa[i].waga)>max[1])
+	    		{
+	    			max[0]=i
+	    			max[1]=Number(trasa.trasa[i].waga)
+	    		}
+	    	}
+	    	if (max[0]>0)
+	    	{
+	    		return `${skrot(trasa.trasa[0].nazwa,14)} > ${skrot(trasa.trasa[max[0]].nazwa)} > ${skrot(trasa.trasa[trasa.trasa.length-1].nazwa)}`
+	    	}
+	    	return trasa.trasa[0].nazwa
+	    }
     }
     function skrot(nazwa,oczekiwanaDlugosc)
     {
-        if (!nazwa || typeof nazwa!="string"){return "BŁĄD"}
-        nazwa=nazwa.toUpperCase()
-        oczekiwanaDlugosc=oczekiwanaDlugosc||7
-        let czastki=[]
-        let nr=""
-        let pomin=0
-        for (let i=0 ; i<nazwa.length ; i++)
-        {
-            if (nazwa[i]==")")
-            {
-                pomin=0
-                continue
-            }
-            if (pomin)
-            {
-                continue
-            }
-            if (Number(nazwa[i]) || nazwa[i]==="0")
-            {
-                nr+=nazwa[i]
-            }
-            else if (nazwa[i]=="(")
-            {
-                pomin=1
-                continue
-            }
-            else
-            {
-                if (nazwa[i]==="R" && nazwa[i+1]==="Z")
-                {
-                    czastki.push(`${nazwa[i]}${nazwa[i+1]}`)
-                    i++
-                }
-                else if (nazwa[i]==="C" && nazwa[i+1]==="H")
-                {
-                    czastki.push(`${nazwa[i]}${nazwa[i+1]}`)
-                    i++
-                }
-                else if ((nazwa[i]==="S" || nazwa[i]==="C") && nazwa[i+1]==="Z")
-                {
-                    czastki.push(`${nazwa[i]}${nazwa[i+1]}`)
-                    i++
-                }
-                else
-                {
-                    czastki.push(`${nazwa[i]}`)
-                }
-            }
-        }
-        let ciecie=czastki.length
-        for (let i=czastki.length-1 ; i>3 ; i--)
-        {
-            if (czastki[i]==" " || czastki[i]=="_")
-            {
-                ciecie=i
-            }
-            else
-            {
-                break
-            }
-        }
-        czastki=czastki.slice(0,ciecie)
-        nr=Number(nr)
-        if (nr==1){nr=0}
-        let zwrotka=""
-        for (let i=0 ; i<czastki.length ; i++)
-        {
-            zwrotka+=czastki[i]
-            if (i<czastki.length-4 && czastki[i+1]!=" " && (zwrotka.length>oczekiwanaDlugosc/3 || `${zwrotka}${nr||""}`.length>=(oczekiwanaDlugosc-2)))
-            {
-                if (/[aąeęiyou]/i.test(czastki[i]))
-                {
-                    if (czastki[i+1]!=" " && czastki[i+1]!="_")
-                    {
-                        zwrotka+=(czastki[i+1]||"")
-                    }
-                    else if (czastki[i+2]!=" " && czastki[i+2]!="_")
-                    {
-                        zwrotka+=`${(czastki[i+1]||"")}${(czastki[i+2]||"")}`
-                    }
-                    zwrotka+="."
-                    break
-                }
-            }
-        }
-        return `${zwrotka}${nr||""}`
+    	if (!nazwa || typeof nazwa!="string"){return "BŁĄD"}
+    	nazwa=nazwa.toUpperCase()
+    	oczekiwanaDlugosc=oczekiwanaDlugosc||7
+    	let czastki=[]
+    	let nr=""
+    	let pomin=0
+    	for (let i=0 ; i<nazwa.length ; i++)
+    	{
+    		if (nazwa[i]==")")
+    		{
+    			pomin=0
+    			continue
+    		}
+    		if (pomin)
+    		{
+    			continue
+    		}
+    		if (Number(nazwa[i]) || nazwa[i]==="0")
+    		{
+    			nr+=nazwa[i]
+    		}
+    		else if (nazwa[i]=="(")
+    		{
+    			pomin=1
+    			continue
+    		}
+    		else
+    		{
+    			if (nazwa[i]==="R" && nazwa[i+1]==="Z")
+    			{
+    				czastki.push(`${nazwa[i]}${nazwa[i+1]}`)
+    				i++
+    			}
+    			else if (nazwa[i]==="C" && nazwa[i+1]==="H")
+    			{
+    				czastki.push(`${nazwa[i]}${nazwa[i+1]}`)
+    				i++
+    			}
+    			else if ((nazwa[i]==="S" || nazwa[i]==="C") && nazwa[i+1]==="Z")
+    			{
+    				czastki.push(`${nazwa[i]}${nazwa[i+1]}`)
+    				i++
+    			}
+    			else
+    			{
+    				czastki.push(`${nazwa[i]}`)
+    			}
+    		}
+    	}
+    	let ciecie=czastki.length
+    	for (let i=czastki.length-1 ; i>3 ; i--)
+    	{
+    		if (czastki[i]==" ")
+    		{
+    			ciecie=i
+    		}
+    		else
+    		{
+    			break
+    		}
+    	}
+    	czastki=czastki.slice(0,ciecie)
+    	nr=Number(nr)
+    	if (nr==1){nr=0}
+    	let zwrotka=""
+    	for (let i=0 ; i<czastki.length ; i++)
+    	{
+    		zwrotka+=czastki[i]
+    		if (i<czastki.length-4 && czastki[i+1]!=" " && (zwrotka.length>oczekiwanaDlugosc/3 || `${zwrotka}${nr||""}`.length>=(oczekiwanaDlugosc-2)))
+    		{
+    			if (/[aąeęiyou]/i.test(czastki[i]))
+    			{
+    				if (czastki[i+1]!=" ")
+    				{
+    					zwrotka+=(czastki[i+1]||"")
+    				}
+    				else if (czastki[i+2]!=" ")
+    				{
+						zwrotka+=`${(czastki[i+1]||"")} ${(czastki[i+2]||"")}`
+    				}
+    				zwrotka+="."
+    				break
+    			}
+    		}
+    	}
+    	return `${zwrotka}${nr||""}`
     }
-    function usunZnak(tekst,znak,znakZastepczy)
+    function zaznaczPrzewoznika(nr)
     {
-        for (let i=0 ; i<27 ; i++)
-        {
-            tekst=tekst.replace(znak,znakZastepczy||"")
-        }
-        return tekst
+    	if (nr<1){return}
+    	const znaczniki=document.getElementsByClassName(`numerZaznaczony`)
+   		for (let z=0 ; z<200 ; z++)
+   		{
+   			if (znaczniki.length<1){break}
+   			znaczniki[0].className=znaczniki[0].className.replace("numerZaznaczony ","numer ")
+   		}
+    	setTimeout(()=>
+    	{
+    		const znaczniki=document.getElementsByClassName(`przewoznik_${nr}`)
+	    	for (let znacznik of znaczniki)
+	    	{
+	    		znacznik.className=znacznik.className.replace("numer ","numerZaznaczony ")
+	    	}
+    	},50)
     }
-    function usunDuplikatZnaku(tekst,znak)
+    function zaznaczRampy(nr)
     {
-        for (let i=0 ; i<27 ; i++)
-        {
-            let t=tekst[0]
-            for (let j=1 ; j<tekst.length ; j++)
-            {
-                if (tekst[j]!=znak || tekst[j-1]!=znak)
-                {
-                    t+=tekst[j]
-                }
-            }
-                tekst=t
-        }
-        return tekst
+    	if (nr<1){return}
+    	const znaczniki=document.getElementsByClassName(`rampaZaznaczona`)
+   		for (let z=0 ; z<200 ; z++)
+   		{
+   			if (znaczniki.length<1){break}
+   			znaczniki[0].className=znaczniki[0].className.replace("rampaZaznaczona ","rampa ")
+   		}
+    	setTimeout(()=>
+    	{
+    		const znaczniki=document.getElementsByClassName(`rampa_${nr}`)
+	    	for (let znacznik of znaczniki)
+	    	{
+	    		znacznik.className=znacznik.className.replace("rampa ","rampaZaznaczona ")
+	    	}
+    	},50)
     }
-    function nowyZnacznik()
+    function pokazTrase(dane)
     {
-        znacznik++
-        if (znacznik>999)
-        {
-            znacznik=1
-        }
-        localStorage.setItem("znacznik",`${znacznik}`)
+    	localStorage.setItem("zaznaczonaTrasa",JSON.stringify(dane||0))
+    	const div=document.getElementById("podgladTrasy")
+    	div.innerHTML=""
+    	if (!dane)
+    	{
+    		div.style.top="-150vh"
+    		return
+    	}
+    	div.style.top="5vh"
+    	const podwiersz1=document.createElement("div")
+    	podwiersz1.className="podwiersz"
+    	const podwiersz2=document.createElement("div")
+    	podwiersz2.className="podwiersz"
+    	const podwiersz3=document.createElement("div")
+    	podwiersz3.className="podwiersz"
+    	const podwiersz4=document.createElement("div")
+    	podwiersz4.className="podwiersz"
+    	const podwiersz5=document.createElement("div")
+    	podwiersz5.className="podwiersz"
+    	div.appendChild(podwiersz1)
+    	div.appendChild(podwiersz2)
+    	div.appendChild(podwiersz3)
+    	div.appendChild(podwiersz4)
+    	div.appendChild(podwiersz5)
+    	//
+    	const zamknij=document.createElement("div")
+    	zamknij.className="zamknij"
+    	zamknij.innerHTML="Zamknij Podgląd"
+    	podwiersz1.appendChild(zamknij)
+    	podwiersz1.onclick = new Function(`pokazTrase()`)
+    	//
+    	const numer=document.createElement("div")
+    	numer.className=`numer`
+    	numer.innerHTML=`Nr: ${dane.nrTrasy}`
+    	podwiersz2.appendChild(numer)
+    	//
+    	const przewoznik=document.createElement("div")
+    	przewoznik.className="przewoznik"
+    	przewoznik.innerHTML=`${dane.przewoznik||"źle odczytany przewoźnik"}`
+    	podwiersz2.appendChild(przewoznik)
+    	//
+    	const godzina=document.createElement("div")
+    	godzina.className="godzina"
+    	godzina.innerHTML=(dane.godzina||"??:??")
+    	podwiersz2.appendChild(godzina)
+    	//
+    	const waga=document.createElement("div")
+    	waga.className="waga"
+    	waga.style.marginLeft="0vh"
+    	waga.innerHTML=`Waga Towaru: &nbsp; ${dane.waga}t`
+    	podwiersz3.appendChild(waga)
+    	//
+    	const rampa=document.createElement("div")
+    	rampa.className="rampa"
+    	rampa.innerHTML=`Rampa: &nbsp; ${dostepneRampy[(dane.nrTrasy-1)%dostepneRampy.length]}`
+    	podwiersz3.appendChild(rampa)
+    	//
+    	const klucze=[]
+    	//
+    	for (let i=0 ; i<dane.trasa.length ; i++)
+    	{
+    		const punkt=dane.trasa[i]
+    		const przystanek=document.createElement("div")
+    		przystanek.className="przystanek"
+    		//
+    		const godzina=document.createElement("div")
+    		godzina.className="godzina"
+    		godzina.innerHTML=(punkt.godzina||"??:??")
+    		przystanek.appendChild(godzina)
+    		//
+    		const nazwa=document.createElement("div")
+    		nazwa.className="nazwa"
+    		if (i+1<10)
+    		{
+				nazwa.innerHTML+=`<span style="opacity:0;">0</span>`
+    		}
+    		nazwa.innerHTML+=`${i+1} &nbsp; `
+    		if (punkt.typ)
+    		{
+    			nazwa.innerHTML+=`[${punkt.typ}] &nbsp; `
+    		}
+    		else
+    		{
+    			nazwa.innerHTML+=`[&nbsp;&nbsp;&nbsp;] &nbsp; `
+    			klucze.push(`${skrot(punkt.nazwa,5)}`)
+    		}
+    		if (punkt.nazwa.length>14)
+    		{
+    			nazwa.innerHTML+=`${skrot(punkt.nazwa,17)}`
+    		}
+    		else
+    		{
+    			nazwa.innerHTML+=`${punkt.nazwa}`
+    		}
+    		przystanek.appendChild(nazwa)
+    		//
+    		const waga=document.createElement("div")
+    		waga.className="waga"
+    		waga.style.float="right"
+    		waga.style.marginRight="2vh"
+    		for (let i=0 ; i<Math.round(punkt.waga/50) ; i++)
+    		{
+    			waga.innerHTML+=`!`
+    		}
+    		waga.innerHTML+=` &nbsp; ${Math.round(punkt.waga/10)*10} kg`
+    		przystanek.appendChild(waga)
+    		//
+    		podwiersz5.appendChild(przystanek)
+    	}
+    	if (klucze.length>0)
+    	{
+    		if (klucze.length===1)
+    		{
+    			const kluczeDiv=document.createElement("div")
+	    		kluczeDiv.className="klucze"
+	    		kluczeDiv.innerHTML=`klucz: ${klucze[0]}`
+	    		podwiersz4.appendChild(kluczeDiv)
+    		}
+    		else
+    		{
+    			const kluczeDiv=document.createElement("div")
+    			kluczeDiv.className="klucze"
+    			if (klucze.length<5)
+    			{
+    				kluczeDiv.innerHTML=`${klucze.length} klucze:`
+    			}
+    			else
+    			{
+    				kluczeDiv.innerHTML=`${klucze.length} kluczy:`
+    			}
+	    		for (let klucz of klucze)
+	    		{
+	    			kluczeDiv.innerHTML+=` &nbsp; ${klucz}`
+	    		}
+	    		podwiersz4.appendChild(kluczeDiv)
+    		}
+    	}
     }
-    function zamknijPodglad()
+    function reset()
     {
-        document.getElementById("podgladTrasy").className="okno zamkniete"
-        moja=0
-        const lista=szukajListy(znacznikListy)
-        if (lista.moja)
-        {
-            document.querySelector(".moja").className="moja otwarta"
-        }
-        else
-        {
-            document.querySelector(".moja").className="moja zamknieta"
-        }
-        zaznaczTrase(0)
+    	localStorage.setItem("wczytaneTrasa","0")
+    	localStorage.setItem("zaznaczonaTrasa","0")
+    	location.reload()
     }
-    function zaznaczTrase(nrNaLiscie,dane)
+    async function pokazCzas()
     {
-        if (nrNaLiscie>0)
-        {
-            document.querySelector(".moja").className="moja zamknieta"
-        }
-        zaznaczona=dane||0
-        moja=0
-        for (let lista of listyTras)
-        {
-            if (lista.znacznik==znacznikListy)
-            {
-                lista.zaznaczona=nrNaLiscie
-                break
-            }
-        }
-        setTimeout(()=>{localStorage.setItem("listyTras",JSON.stringify(listyTras))},10)
-    }
-    function pokazMoja()
-    {
-        const lista=szukajListy(znacznikListy)
-        let trasa=0
-        if (lista.moja)
-        {
-            document.querySelector(".moja").className="moja zamknieta"
-            for (let mojaTrasa of mojeTrasy)
-            {
-                if (mojaTrasa.znacznik==lista.moja)
-                {
-                    moja=lista.moja
-                    zaznaczona=0
-                    trasa=mojaTrasa.trasa
-                    break
-                }
-            }
-        }
-        console.log(trasa)
-        if (trasa)
-        {
-            menu.pokazTrase(0,trasa,"moja")
-        }
-    }
-    function oznaczJakoMoja()
-    {
-        const lista=szukajListy(znacznikListy)
-        if (lista.moja)
-        {
-            let z=1
-            for (let mojaTrasa of mojeTrasy)
-            {
-                if (lista.moja==mojaTrasa.znacznik)
-                {
-                    z=0
-                    mojaTrasa.trasa=zaznaczona
-                    setTimeout(()=>{localStorage.setItem("mojeTrasy",JSON.stringify(mojeTrasy))},10)
-                    break
-                }
-            }
-            if (z)
-            {
-                lista.moja=0
-                oznaczJakoMoja()
-            }
-        }
-        else if (lista.zaznaczona>0)
-        {
-            const mojaTrasa={znacznik:znacznik,trasa:zaznaczona}
-            lista.moja=znacznik
-            moja=znacznik
-            nowyZnacznik()
-            mojeTrasy.unshift(mojaTrasa)
-            setTimeout(()=>{localStorage.setItem("mojeTrasy",JSON.stringify(mojeTrasy))},10)
-        }
-        zaznaczona=0
-        setTimeout(()=>{localStorage.setItem("listyTras",JSON.stringify(listyTras))},10)
-    }
-    function usunZmoja()
-    {
-        let t=[]
-        for (let mojaTrasa of mojeTrasy)
-        {
-            if (mojaTrasa.znacznik!=moja)
-            {
-                t.push(mojaTrasa)
-            }
-        }
-        mojeTrasy=t
-        zamknijPodglad()
-        setTimeout(()=>{localStorage.setItem("mojeTrasy",JSON.stringify(mojeTrasy))},10)
-    }
-    function szukajListy(znacznik)
-    {
-        for (let lista of listyTras)
-        {
-            if (lista.znacznik==znacznik)
-            {
-                return lista
-            }
-        }
-        return 0
-    }
+    	const dataGlobalna=document.getElementById("dataGlobalna")
+    	if (!dataGlobalna){return}
+	    const pobranyCzas = await fetch('https://worldtimeapi.org/api/timezone/Europe/Warsaw').then(r => r.json()).catch(r => {return 0})
+		if (!pobranyCzas){return}
+		data = new Date(pobranyCzas.datetime)
+		dataGlobalna.innerHTML=`dziś jest: <span class="spanData">${["niedziela","poniedziałek","wtorek","środa","czwartek","piątek","sobota","niedziela?"][pobranyCzas.day_of_week]}</span><br>`
+		dataGlobalna.innerHTML+=`${stringDaty(data)}<br>`
+		dataGlobalna.innerHTML+=`godzina &nbsp;&nbsp;PL: ${stringGodziny(data)}&nbsp;<br>`
+		dataGlobalna.innerHTML+=`godzina UTC: ${stringGodziny(data,"UTC")}&nbsp;<br>`
+		dataGlobalna.innerHTML+=`<span style="color:gray;">(czas pobrany z internetu)</span>`
+	    console.log(pobranyCzas)
+	}
+	function stringDaty(obiektData)
+	{
+		return `<span class="spanData">${dodajZero(obiektData.getDate())}.${dodajZero(obiektData.getMonth())}.${obiektData.getFullYear()}r.</span>`
+		function dodajZero(liczba)
+	    {
+	    	liczba=`${liczba}`
+	    	if (liczba.length<2)
+	    	{
+	    		return `0${liczba}`
+	    	}
+	    	return liczba
+	    }
+	}
+	function stringGodziny(obiektData,utc)
+	{
+		if (utc)
+		{
+			return `<span class="spanData">${dodajZero(obiektData.getUTCHours())}:${dodajZero(obiektData.getUTCMinutes())}</span>`
+		}
+		else
+		{
+			return `<span class="spanData">${dodajZero(obiektData.getHours())}:${dodajZero(obiektData.getMinutes())}</span>`
+		}
+		function dodajZero(liczba)
+	    {
+	    	liczba=`${liczba}`
+	    	if (liczba.length<2)
+	    	{
+	    		return `0${liczba}`
+	    	}
+	    	return liczba
+	    }
+	}
 </script>
 </head>
 <body onload="start()">
-    <div class="dystans"></div>
-    <div id="listaTras"></div>
-    <div class="dystans"></div>
-    <div id="podgladTrasy" class="okno zamkniete">
-        <div class="nrTrasyPodglad">7</div>
-        <div class="przewoznikPodglad">Test</div>
-        <div class="godzinaPodglad">17:55</div>
-        <div class="tonarzPodglad">3.5</div>
-        <div class="rampaPodglad">8</div>
-        <div id="przystanki"></div>
-        <div class="zamknij"></div>
-    </div>
-    <div class="moja otwarta"></div>
-    <div id="menu" class="okno zamkniete"><div class="kontent">test</div><div class="zamknij"></div></div>
-    <div id="wczytaj" class="okno zamkniete"><div class="kontent"><div class="pozycjaMenu" style="width: 44vh;"><div class="tresc" style="width: 100%">Wybierz plik .TSV lub .CSV</div></div><input type="file" id="wybierak" accept=".csv, .tsv"></div><div class="zamknij"></div></div>
-    <div id="pytanie" class="okno zamkniete"><div id="trescPytania"></div><div id="warianty"></div></div>
-    <div id="hamburger"><div class="pasHamburgera"></div><div class="pasHamburgera"></div><div class="pasHamburgera"></div></div>
-    <template id="wierszListy">
-        <div class="nrTrasy">7</div>
-        <div class="przewoznik">Test</div>
-        <div class="iloscPrzystankow">7</div>
-        <div class="godzina">17:55</div>
-        <div class="skrotTrasy">PLESZEW3 > PLESZEW5 > PLESZEW</div>
-        <div class="paka">3.5</div><div class="kabina"></div>
-        <div class="rampa">8</div>
-    </template>
+	<input type="file" id="fileInput" accept=".csv"> <!-- Akceptujemy tylko pliki CSV -->
+	<div id="trasy">
+		Program do przeglądania tras.<br><br>
+		Instrukcja:<br><br>
+		1. Pobierz <b><u>na telefon</u></b> trasy z rozszerzeniem <b><u>CSV</u></b><br>
+		(szukaj w trzech kropkach -> udostępnij i eksploruj -> zapisz jako -> plik CSV)<br><br>
+		2. Wróć na tą stronę i kliknij poniżej żeby wybrać plik.<br><br>
+		3. Po wybraniu zobaczysz listę tras.<br><br>
+		- Kliknij na skrót trasy żeby zobaczyć całość.<br>
+		- Kliknij na swojego przewoźnika żeby zaznaczyć wszystkie jego trasy.<br>
+		- Kliknij na nr rampy żeby zaznaczyć wszystkie z tym samym numerem.<br>
+		- Trasa nie zniknie po odświeżeniu strony. Żeby załadować inną kliknij odpowiedni napis na górze strony.<br>
+		- Jeżeli trasa będzie źle zapisana zobaczysz o tym komunikat. Wyślij plik z trasą do mnie, dopasuję program do odczytu nowego formatu tras.<br><br>
+		aplikacja wykorzystuje localStorage (pamięć podręczna przeglądarki) do zapamiętywania wczytanej trasy<br>
+		aplikacja wykorzystuje World Time API do wyświetlania aktualnej daty i godziny<br>
+	</div>
+	<div id="podgladTrasy"></div>
 </body>
 </html>
