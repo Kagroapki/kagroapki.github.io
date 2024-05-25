@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>płytka PCB</title>
+<meta charset="utf-8" />
+<style type="text/css">
+	*{margin: 0; padding: 0;}
+	canvas
+	{
+		transition: 0.5s;
+		position: relative;
+	}
+	#menu
+	{
+		display: flex;
+	}
+	.guzik
+	{
+		background: gray;
+		text-align: center;
+	}
+	.pr
+	{
+		float: left;
+	}
+	@media screen and (max-width: 115vh)
+	{
+		#menu
+		{
+			width: 99vw;
+			height: 11vw;
+			flex-direction: row;
+		}
+		.guzik
+		{
+			height: 9vw;
+			width: 30vh;
+			border: solid black 0.5vw;
+			border-radius: 2vw;
+			font-size: 7vw;
+		}
+		.pr
+		{
+			height: 90vw;
+			width: 90vw;
+			margin: 0.5vw;
+		}
+	}
+	@media screen and (min-width: 115vh)
+	{
+		#menu
+		{
+			height: 99vh;
+			width: 11vh;
+			float: left;
+			flex-direction: column;
+		}
+		.guzik
+		{
+			opacity: 0.7;
+			height: 30vh;
+			min-width: 9vh;
+			border: solid black 0.5vh;
+			border-radius: 2vh;
+			font-size: 7vh;
+		}
+		.guzik:hover
+		{
+			opacity: 1;
+			border: solid gold 0.5vh;
+		}
+		.pr
+		{
+			height: 90vh;
+			width: 90vh;
+			float: left;
+			margin: 0.5vh;
+		}
+	}
+</style>
+<script type="text/javascript">
+const nawigacja={strona:1,y:7,x:7}
+const d=9
+const mapa=[[],[]]
+let odbiorniki=[]
+const sciezki=[[[[[[],[]],[[],[]]],[[[],[]],[[],[]]]],[[[[],[]],[[],[]]],[[[],[]],[[],[]]]]],[[[[[],[]],[[],[]]],[[[],[]],[[],[]]]],[[[[],[]],[[],[]]],[[[],[]],[[],[]]]]]]
+const obrazki=[[[{kolor:`#e30712`,typ:"kolo",polozenieY:50,polozenieX:50,r:40}]],[]]
+const ostatniKlik=[0,0,0]
+let wygrana=0
+let edycja=0
+function start()
+{
+	console.log("żeby włączyć tryb edycji wpisz & w grze. żeby zacząć tworzyć planszę na nowo wpisz *")
+	console.log("żeby dodać nadajnik lub odbiornik kliknij pole tak żeby zrobić przebicie na drugą stronę a potem codnij i naciśnij klawisz qwe...sdf. żeby zrobić nadajnik dodaj szift")
+	console.log("żeby dodać obraze procesora zrób tak samo przebicie ale kliknij klawisz m. procesor musi być prostokątem nie stykającym się z innym procesorem. obrazek jest generowany w trybie edycji. w grze jest ładowany gotowy obrazek")
+	console.log("żeby wybrać pochylenie nadajnika lub odbiornika zaznacz go a potem kliknij klawisze 1-3 na górze klawiatury.")
+	console.log("żeby zapisać gotową planszę wpisz !")
+	console.log("pamiętaj że tylko w trybie edycji masz możliwość edytowania ścieżek stykających się z nadajnikiem lub odbiornikiem czego nie da się zrobić podczas gry. ustaw ścieżki przy nadajnikach i odbiornikach tak żeby dało się je połączyć w grze.")
+	console.log("gotową planszę należy dodać do tablicy q w funkcji wczytajNowaMape która znajduje się w funkcji noweRozdanie")
+	utworzSciezki()
+	utworzObrazki()
+	noweRozdanie()
+	odwroc()
+	document.getElementById("menu").children[0].onclick=odwroc
+	document.getElementById("menu").children[1].onclick=function(){noweRozdanie(1);odwroc();odwroc()}
+	document.getElementById(`c`).addEventListener("click",reakcjaNaKlikniecie)
+	function utworzSciezki()
+	{
+		sciezki[1][0][0][0][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[0,40],[20,40],[20,60],[0,60]]},{typ:"kolo",kolor:"#07b100",polozenieY:20,polozenieX:50,r:20}]
+		sciezki[0][1][0][0][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[40,100],[40,80],[60,80],[60,100]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:80,r:20}]
+		sciezki[0][0][1][0][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[100,40],[80,40],[80,60],[100,60]]},{typ:"kolo",kolor:"#07b100",polozenieY:80,polozenieX:50,r:20}]
+		sciezki[0][0][0][1][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[40,0],[40,20],[60,20],[60,0]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:20,r:20}]
+		sciezki[0][0][0][0][1]=[{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		//
+		sciezki[1][0][1][0][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[0,40],[100,40],[100,60],[0,60]]}]
+		sciezki[0][1][0][1][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[40,0],[40,100],[60,100],[60,0]]}]
+		sciezki[1][0][1][0][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[0,40],[100,40],[100,60],[0,60]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		sciezki[0][1][0][1][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[40,0],[40,100],[60,100],[60,0]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		//
+		sciezki[1][0][0][0][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[0,40],[50,40],[50,60],[0,60]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		sciezki[0][1][0][0][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[40,100],[40,50],[60,50],[60,100]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		sciezki[0][0][1][0][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[100,40],[50,40],[50,60],[100,60]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		sciezki[0][0][0][1][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[40,0],[40,50],[60,50],[60,0]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		//
+		sciezki[1][1][0][0][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[0,60],[20,60],[40,80],[40,100],[60,100],[60,70],[30,40],[0,40]]}]
+		sciezki[0][1][1][0][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[60,100],[60,80],[80,60],[100,60],[100,40],[70,40],[40,70],[40,100]]}]
+		sciezki[0][0][1][1][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[100,40],[80,40],[60,20],[60,0],[40,0],[40,30],[70,60],[100,60]]}]
+		sciezki[1][0][0][1][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[0,40],[20,40],[40,20],[40,0],[60,0],[60,30],[30,60],[0,60]]}]
+		//
+		sciezki[1][1][1][0][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[40,100],[40,90],[10,60],[0,60],[0,40],[20,40],[40,60],[60,60],[80,40],[100,40],[100,60],[90,60],[60,90],[60,100]]}]
+		sciezki[0][1][1][1][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[100,40],[90,40],[60,10],[60,0],[40,0],[40,20],[60,40],[60,60],[40,80],[40,100],[60,100],[60,90],[90,60],[100,60]]}]
+		sciezki[1][0][1][1][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[40,0],[40,10],[10,40],[0,40],[0,60],[20,60],[40,40],[60,40],[80,60],[100,60],[100,40],[90,40],[60,10],[60,0]]}]
+		sciezki[1][1][0][1][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[10,40],[0,40],[0,60],[10,60],[40,90],[40,100],[60,100],[60,80],[40,60],[40,40],[60,20],[60,0],[40,0],[40,10]]}]
+		//
+		sciezki[1][1][0][0][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[0,40],[40,40],[60,60],[60,100],[40,100],[40,60],[0,60]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		sciezki[0][1][1][0][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[60,100],[60,60],[100,60],[100,40],[60,40],[40,60],[40,100]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		sciezki[0][0][1][1][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[100,40],[60,40],[60,0],[40,0],[40,40],[60,60],[100,60]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		sciezki[1][0][0][1][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[40,0],[40,40],[0,40],[0,60],[40,60],[60,40],[60,0]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		//
+		sciezki[1][1][1][1][0]=[{typ:"wielokat",kolor:"#07b100",punkty:[[30,20],[60,50],[50,60],[40,50],[50,40],[30,20],[10,40],[0,40],[0,60],[10,60],[40,90],[40,100],[60,100],[60,90],[90,60],[100,60],[100,40],[90,40],[60,10],[60,0],[40,0],[40,10]]}]
+		sciezki[0][1][1][1][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[40,0],[40,100],[60,100],[60,60],[100,60],[100,40],[60,40],[60,0]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		sciezki[1][0][1][1][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[0,60],[100,60],[100,40],[60,40],[60,0],[40,0],[40,40],[0,40]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		sciezki[1][1][0][1][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[60,0],[60,100],[40,100],[40,60],[0,60],[0,40],[40,40],[40,0]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		sciezki[1][1][1][0][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[0,40],[100,40],[100,60],[60,60],[60,100],[40,100],[40,60],[0,60]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+		//
+		sciezki[1][1][1][1][1]=[{typ:"wielokat",kolor:"#07b100",punkty:[[40,0],[40,40],[0,40],[0,60],[40,60],[40,100],[60,100],[60,60],[100,60],[100,40],[60,40],[60,0]]},{typ:"kolo",kolor:"#07b100",polozenieY:50,polozenieX:50,r:30},{typ:"kolo",kolor:"black",polozenieY:50,polozenieX:50,r:20}]
+	}
+	function utworzObrazki()
+	{
+		obrazki[1][0]=[{typ:"wielokat",kolor:"#2f3939",punkty:[[70,100],[70,0],[100,0],[100,100]]},{typ:"wielokat",kolor:"#434d4d",punkty:[[70,0],[70,100],[65,100],[65,0]]}]
+		obrazki[1][1]=[{typ:"wielokat",kolor:"#2f3939",punkty:[[70,0],[70,30],[100,30],[100,0]]},{typ:"wielokat",kolor:"#434d4d",punkty:[[70,0],[70,30],[65,35],[65,0]]},{typ:"wielokat",kolor:"black",punkty:[[100,30],[70,30],[65,35],[100,35]]}]
+		obrazki[1][2]=[{typ:"wielokat",kolor:"#2f3939",punkty:[[0,0],[0,30],[100,30],[100,0]]},{typ:"wielokat",kolor:"black",punkty:[[0,30],[100,30],[100,35],[0,35]]}]
+		obrazki[1][3]=[{typ:"wielokat",kolor:"#2f3939",punkty:[[30,0],[30,30],[0,30],[0,0]]},{typ:"wielokat",kolor:"black",punkty:[[0,30],[30,30],[30,0],[35,0],[35,35],[0,35]]}]
+		obrazki[1][4]=[{typ:"wielokat",kolor:"#2f3939",punkty:[[30,0],[30,100],[0,100],[0,0]]},{typ:"wielokat",kolor:"black",punkty:[[30,100],[30,0],[35,0],[35,100]]}]
+		obrazki[1][5]=[{typ:"wielokat",kolor:"#2f3939",punkty:[[30,70],[0,70],[0,100],[30,100]]},{typ:"wielokat",kolor:"#434d4d",punkty:[[30,70],[0,70],[0,65],[35,65]]},{typ:"wielokat",kolor:"black",punkty:[[30,70],[30,100],[35,100],[35,65]]}]
+		obrazki[1][6]=[{typ:"wielokat",kolor:"#2f3939",punkty:[[0,70],[100,70],[100,100],[0,100]]},{typ:"wielokat",kolor:"#434d4d",punkty:[[0,70],[100,70],[100,65],[0,65]]}]
+		obrazki[1][7]=[{typ:"wielokat",kolor:"#2f3939",punkty:[[70,70],[70,100],[100,100],[100,70]]},{typ:"wielokat",kolor:"#434d4d",punkty:[[100,70],[70,70],[70,100],[65,100],[65,65],[100,65]]}]
+		obrazki[1][8]=[{typ:"wielokat",kolor:"#2f3939",punkty:[[0,0],[100,0],[100,100],[0,100]]}]
+		obrazki[1][9]=[{typ:"wielokat",kolor:"red",punkty:[[15,15],[85,15],[85,85],[15,85]]}]
+	}
+}
+function noweRozdanie(nowe,czysta,nr)
+{
+	if (wygrana)
+	{
+		wygrana=0
+		localStorage.setItem("poziom-plytkaPCB",(Number(localStorage.getItem("poziom-plytkaPCB"))||0)+1)
+		let t=Number(localStorage.getItem("poziom-plytkaPCB"))||0
+		if (!(t>0)){t=0}
+		wczytajNowaMape(t)
+		aktualizujOdbiorniki()
+		pokaz()
+		return
+	}
+	odbiorniki=[]
+	wygrana=0
+	if (czysta){return pustaMapa((Number(prompt("podaj wysokość nowej mapy"))||1)+2,(Number(prompt("podaj szerokość nowej mapy"))||1)+2)}
+	if (nr!=undefined){wczytajNowaMape(nr);aktualizujOdbiorniki()}
+	if (!nowe && wczytajZapis()){return aktualizujOdbiorniki()}
+	let t=Number(localStorage.getItem("poziom-plytkaPCB"))||0
+	if (!(t>0)){t=0}
+	wczytajNowaMape(t)
+	aktualizujOdbiorniki()
+	function pustaMapa(h,d)
+	{
+		mapa[0]=[];mapa[1]=[]
+		for (let c=0 ; c<2 ; c++)
+		{
+			for (let a=0 ; a<h ; a++)
+			{
+				mapa[c][a]=[]
+				for (let b=0 ; b<d ; b++)
+				{
+					mapa[c][a][b]={polaczenia:[0,0,0,0,0]}
+				}
+			}
+		}
+	}
+	function wczytajZapis()
+	{
+		let t=localStorage.getItem("mapa-plytkaPCB")
+		if (t)
+		{
+			t=JSON.parse(t)
+			if (Array.isArray(t))
+			{
+				if (t.length==2)
+				{
+					mapa[0]=t[0]
+					mapa[1]=t[1]
+					return 1
+				}
+			}
+		}
+	}
+	function wczytajNowaMape(nr)
+	{
+		const q=[]
+		q[0]=[[7,11,3,4],[[0,2,8,0,1,[0,0,0,1,1]],[0,3,8,1,1,[0,0,0,1,1]],[0,4,8,2,1,[0,0,0,1,1]]],[[0,2,2,0,1,[0,1,0,0,1]],[0,3,2,1,1,[0,1,0,0,1]],[0,4,2,2,1,[0,1,0,0,1]]],[[0,1,1,1,7,0],[0,1,2,1,1,0],[0,1,8,1,7,0],[0,1,9,1,1,0],[0,2,1,1,6,0],[0,2,2,1,2,0],[0,2,8,1,6,0],[0,2,9,1,2,0],[0,3,1,1,6,0],[0,3,2,1,2,0],[0,3,8,1,6,0],[0,3,9,1,2,0],[0,4,1,1,6,0],[0,4,2,1,2,0],[0,4,8,1,6,0],[0,4,9,1,2,0],[0,5,1,1,5,0],[0,5,2,1,3,0],[0,5,8,1,5,0],[0,5,9,1,3,0]]]
+		q[1]=[[9,12,4,6],[[0,2,8,2,1,[0,0,0,1,1]],[0,4,8,1,1,[0,0,0,1,1]],[0,6,8,0,1,[0,0,0,1,1]]],[[0,2,3,0,1,[0,1,0,0,1]],[0,4,3,1,1,[0,1,0,0,1]],[0,6,3,2,1,[0,1,0,0,1]]],[[0,1,1,1,7,0],[0,1,2,1,0,0],[0,1,3,1,1,0],[0,1,8,1,7,0],[0,1,9,1,0,0],[0,1,10,1,1,0],[0,2,1,1,6,0],[0,2,2,1,8,0],[0,2,3,1,2,0],[0,2,8,1,6,0],[0,2,9,1,8,0],[0,2,10,1,2,0],[0,3,1,1,6,0],[0,3,2,1,8,0],[0,3,3,1,2,0],[0,3,8,1,6,0],[0,3,9,1,8,0],[0,3,10,1,2,0],[0,4,1,1,6,0],[0,4,2,1,8,0],[0,4,3,1,2,0],[0,4,8,1,6,0],[0,4,9,1,8,0],[0,4,10,1,2,0],[0,5,1,1,6,0],[0,5,2,1,8,0],[0,5,3,1,2,0],[0,5,8,1,6,0],[0,5,9,1,8,0],[0,5,10,1,2,0],[0,6,1,1,6,0],[0,6,2,1,8,0],[0,6,3,1,2,0],[0,6,8,1,6,0],[0,6,9,1,8,0],[0,6,10,1,2,0],[0,7,1,1,5,0],[0,7,2,1,4,0],[0,7,3,1,3,0],[0,7,8,1,5,0],[0,7,9,1,4,0],[0,7,10,1,3,0]]]
+		q[2]=[[9,12,4,5],[[0,2,8,3,1,[0,0,0,1,1]],[0,3,8,1,1,[0,0,0,1,1]],[0,4,8,2,1,[0,0,0,1,1]],[0,5,8,0,1,[0,0,0,1,1]],[0,6,8,4,1,[0,0,0,1,1]]],[[0,2,3,0,1,[0,1,0,0,1]],[0,3,3,1,1,[0,1,0,0,1]],[0,4,3,2,1,[0,1,0,0,1]],[0,5,3,3,1,[0,1,0,0,1]],[0,6,3,4,1,[0,1,0,0,1]]],[[0,1,1,1,7,0],[0,1,2,1,0,0],[0,1,3,1,1,0],[0,1,8,1,7,0],[0,1,9,1,0,0],[0,1,10,1,1,0],[0,2,1,1,6,0],[0,2,2,1,8,0],[0,2,3,1,2,0],[0,2,8,1,6,0],[0,2,9,1,8,0],[0,2,10,1,2,0],[0,3,1,1,6,0],[0,3,2,1,8,0],[0,3,3,1,2,0],[0,3,8,1,6,0],[0,3,9,1,8,0],[0,3,10,1,2,0],[0,4,1,1,6,0],[0,4,2,1,8,0],[0,4,3,1,2,0],[0,4,8,1,6,0],[0,4,9,1,8,0],[0,4,10,1,2,0],[0,5,1,1,6,0],[0,5,2,1,8,0],[0,5,3,1,2,0],[0,5,8,1,6,0],[0,5,9,1,8,0],[0,5,10,1,2,0],[0,6,1,1,6,0],[0,6,2,1,8,0],[0,6,3,1,2,0],[0,6,8,1,6,0],[0,6,9,1,8,0],[0,6,10,1,2,0],[0,7,1,1,5,0],[0,7,2,1,4,0],[0,7,3,1,3,0],[0,7,8,1,5,0],[0,7,9,1,4,0],[0,7,10,1,3,0]]]
+		q[3]=[[23,23,10,13],[[0,3,1,13,1,[0,1,0,0,1]],[0,3,16,1,2,[1,0,0,0,1]],[0,3,17,12,2,[1,0,0,0,1]],[0,4,1,0,1,[0,1,0,0,1]],[0,5,1,13,1,[0,1,0,0,1]],[0,6,1,10,1,[0,1,0,0,1]],[0,7,1,9,1,[0,1,0,0,1]],[0,8,1,0,1,[0,1,0,0,1]],[0,9,1,13,1,[0,1,0,0,1]],[0,9,16,1,1,[0,0,0,1,1]],[0,10,1,8,1,[0,1,0,0,1]],[0,10,16,2,1,[0,0,0,1,1]],[0,11,1,10,1,[0,1,0,0,1]],[0,12,1,2,1,[0,1,0,0,1]],[0,13,1,7,1,[0,1,0,0,1]],[0,14,1,6,1,[0,1,0,0,1]],[0,14,14,0,1,[0,0,0,1,1]],[0,14,17,4,1,[0,1,0,0,1]],[0,15,14,1,1,[0,0,0,1,1]],[0,15,17,5,1,[0,1,0,0,1]],[0,16,7,6,1,[0,0,0,1,1]],[0,16,10,2,1,[0,1,0,0,1]],[0,16,14,2,1,[0,0,0,1,1]],[0,16,17,6,1,[0,1,0,0,1]],[0,17,7,7,1,[0,0,0,1,1]],[0,17,10,3,1,[0,1,0,0,1]],[0,17,14,3,1,[0,0,0,1,1]],[0,17,17,7,1,[0,1,0,0,1]]],[[0,3,18,13,2,[1,0,0,0,1]],[0,4,6,0,2,[1,0,0,0,1]],[0,4,7,1,2,[1,0,0,0,1]],[0,4,8,2,2,[1,0,0,0,1]],[0,4,13,12,0,[1,0,0,0,1]],[0,5,5,13,1,[0,0,0,1,1]],[0,5,9,3,1,[0,1,0,0,1]],[0,6,5,10,1,[0,0,0,1,1]],[0,6,9,4,1,[0,1,0,1,1]],[0,7,5,9,1,[0,0,0,1,1]],[0,7,9,5,1,[0,1,0,1,1]],[0,8,6,8,2,[0,0,1,0,1]],[0,8,7,7,2,[0,0,1,0,1]],[0,8,8,6,2,[0,0,1,0,1]]],[[0,3,15,1,7,0],[0,3,16,1,0,0],[0,3,17,1,0,0],[0,3,18,1,0,0],[0,3,19,1,1,0],[0,4,5,1,7,0],[0,4,6,1,0,0],[0,4,7,1,0,0],[0,4,8,1,0,0],[0,4,9,1,1,0],[0,4,15,1,6,0],[0,4,16,1,8,0],[0,4,17,1,8,0],[0,4,18,1,8,0],[0,4,19,1,2,0],[0,5,5,1,6,0],[0,5,6,1,8,0],[0,5,7,1,8,0],[0,5,8,1,8,0],[0,5,9,1,2,0],[0,5,15,1,5,0],[0,5,16,1,4,0],[0,5,17,1,4,0],[0,5,18,1,4,0],[0,5,19,1,3,0],[0,6,5,1,6,0],[0,6,6,1,8,0],[0,6,7,1,8,0],[0,6,8,1,8,0],[0,6,9,1,2,0],[0,7,5,1,6,0],[0,7,6,1,8,0],[0,7,7,1,8,0],[0,7,8,1,8,0],[0,7,9,1,2,0],[0,8,5,1,5,0],[0,8,6,1,4,0],[0,8,7,1,4,0],[0,8,8,1,4,0],[0,8,9,1,3,0],[0,8,16,1,7,0],[0,8,17,1,0,0],[0,8,18,1,0,0],[0,8,19,1,1,0],[0,9,16,1,6,0],[0,9,17,1,8,0],[0,9,18,1,8,0],[0,9,19,1,2,0],[0,10,16,1,6,0],[0,10,17,1,8,0],[0,10,18,1,8,0],[0,10,19,1,2,0],[0,11,16,1,5,0],[0,11,17,1,4,0],[0,11,18,1,4,0],[0,11,19,1,3,0],[0,13,14,1,7,0],[0,13,15,1,0,0],[0,13,16,1,0,0],[0,13,17,1,1,0],[0,14,14,1,6,0],[0,14,15,1,8,0],[0,14,16,1,8,0],[0,14,17,1,2,0],[0,15,7,1,7,0],[0,15,8,1,0,0],[0,15,9,1,0,0],[0,15,10,1,1,0],[0,15,14,1,6,0],[0,15,15,1,8,0],[0,15,16,1,8,0],[0,15,17,1,2,0],[0,16,7,1,6,0],[0,16,8,1,8,0],[0,16,9,1,8,0],[0,16,10,1,2,0],[0,16,14,1,6,0],[0,16,15,1,8,0],[0,16,16,1,8,0],[0,16,17,1,2,0],[0,17,7,1,6,0],[0,17,8,1,8,0],[0,17,9,1,8,0],[0,17,10,1,2,0],[0,17,14,1,6,0],[0,17,15,1,8,0],[0,17,16,1,8,0],[0,17,17,1,2,0],[0,18,7,1,5,0],[0,18,8,1,4,0],[0,18,9,1,4,0],[0,18,10,1,3,0],[0,18,14,1,5,0],[0,18,15,1,4,0],[0,18,16,1,4,0],[0,18,17,1,3,0]]]
+		q[4]=[[17,17,10,4],[[0,15,2,10,2,[1,0,0,0,1]],[0,15,3,1,2,[1,0,0,0,1]],[0,15,4,8,2,[1,0,0,0,1]],[0,15,5,0,2,[1,0,0,0,1]],[0,15,6,4,2,[1,0,0,0,1]],[0,15,7,2,2,[1,0,0,0,1]],[0,15,8,6,2,[1,0,0,0,1]],[0,15,9,11,2,[1,0,0,0,1]],[0,15,10,13,2,[1,0,0,0,1]],[0,15,11,9,2,[1,0,0,0,1]],[0,15,12,3,2,[1,0,0,0,1]],[0,15,13,5,2,[1,0,0,0,1]],[0,15,14,7,2,[1,0,0,0,1]],[0,15,15,12,2,[1,0,0,0,1]]],[[0,6,8,8,0,[1,0,0,0,1]],[0,6,9,10,0,[1,0,0,0,1]],[0,6,10,12,0,[1,0,0,0,1]],[0,7,7,0,0,[0,0,0,1,1]],[0,7,11,1,0,[0,1,0,0,1]],[0,8,7,4,0,[0,0,0,1,1]],[0,8,11,5,0,[0,1,0,0,1]],[0,9,7,6,0,[0,0,0,1,1]],[0,9,11,7,0,[0,1,0,0,1]],[0,10,7,2,0,[0,0,0,1,1]],[0,10,11,3,0,[0,1,0,0,1]],[0,11,8,13,0,[0,0,1,0,1]],[0,11,9,11,0,[0,0,1,0,1]],[0,11,10,9,0,[0,0,1,0,1]]],[[0,6,7,1,7,0],[0,6,8,1,0,0],[0,6,9,1,0,0],[0,6,10,1,0,0],[0,6,11,1,1,0],[0,7,7,1,6,0],[0,7,8,1,8,0],[0,7,9,1,8,0],[0,7,10,1,8,0],[0,7,11,1,2,0],[0,8,7,1,6,0],[0,8,8,1,8,0],[0,8,9,1,8,0],[0,8,10,1,8,0],[0,8,11,1,2,0],[0,9,7,1,6,0],[0,9,8,1,8,0],[0,9,9,1,8,0],[0,9,10,1,8,0],[0,9,11,1,2,0],[0,10,7,1,6,0],[0,10,8,1,8,0],[0,10,9,1,8,0],[0,10,10,1,8,0],[0,10,11,1,2,0],[0,11,7,1,5,0],[0,11,8,1,4,0],[0,11,9,1,4,0],[0,11,10,1,4,0],[0,11,11,1,3,0]]]
+		q[5]=[[39,19,19,13],[[0,8,12,4,0,[0,0,1,0,1]],[0,8,13,6,0,[0,0,1,0,1]],[0,12,1,10,1,[0,1,0,0,1]],[0,13,1,0,1,[0,1,0,0,1]],[0,14,1,1,1,[0,1,0,0,1]],[0,15,1,2,1,[0,1,0,0,1]],[0,16,1,3,1,[0,1,0,0,1]],[0,17,1,4,1,[0,1,0,0,1]],[0,18,1,7,1,[0,1,0,0,1]],[0,18,17,11,1,[0,0,0,1,1]],[0,19,1,5,1,[0,1,0,0,1]],[0,19,17,12,1,[0,0,0,1,1]],[0,20,1,6,1,[0,1,0,0,1]],[0,20,17,13,1,[0,0,0,1,1]],[0,21,1,9,1,[0,1,0,0,1]],[0,21,17,7,1,[0,0,0,1,1]],[0,22,1,8,1,[0,1,0,0,1]],[0,23,1,11,1,[0,1,0,0,1]],[0,24,1,12,1,[0,1,0,0,1]],[0,25,1,13,1,[0,1,0,0,1]]],[[0,4,9,7,2,[1,0,0,0,1]],[0,4,10,6,2,[1,0,0,0,1]],[0,4,11,5,2,[1,0,0,0,1]],[0,4,12,4,2,[1,0,0,0,1]],[0,4,13,3,2,[1,0,0,0,1]],[0,5,8,8,1,[0,0,0,1,1]],[0,5,14,2,1,[0,1,0,0,1]],[0,6,8,9,1,[0,0,0,1,1]],[0,6,14,1,1,[0,1,0,0,1]],[0,7,8,10,1,[0,0,0,1,1]],[0,7,14,0,1,[0,1,0,0,1]],[0,8,9,11,2,[0,0,1,0,1]],[0,8,10,12,2,[0,0,1,0,1]],[0,8,11,13,2,[0,0,1,0,1]],[0,11,14,6,0,[1,0,0,0,1]],[0,12,14,4,0,[0,0,0,1,1]]],[[0,4,8,1,7,0],[0,4,9,1,0,0],[0,4,10,1,0,0],[0,4,11,1,0,0],[0,4,12,1,0,0],[0,4,13,1,0,0],[0,4,14,1,1,0],[0,5,8,1,6,0],[0,5,9,1,8,0],[0,5,10,1,8,0],[0,5,11,1,8,0],[0,5,12,1,8,0],[0,5,13,1,8,0],[0,5,14,1,2,0],[0,6,8,1,6,0],[0,6,9,1,8,0],[0,6,10,1,8,0],[0,6,11,1,8,0],[0,6,12,1,8,0],[0,6,13,1,8,0],[0,6,14,1,2,0],[0,7,8,1,6,0],[0,7,9,1,8,0],[0,7,10,1,8,0],[0,7,11,1,8,0],[0,7,12,1,8,0],[0,7,13,1,8,0],[0,7,14,1,2,0],[0,8,8,1,5,0],[0,8,9,1,4,0],[0,8,10,1,4,0],[0,8,11,1,4,0],[0,8,12,1,4,0],[0,8,13,1,4,0],[0,8,14,1,3,0]]]
+		if (nr>q.length-1)
+		{
+			nr=3
+			localStorage.setItem("poziom-plytkaPCB",2)
+		}
+		const m=q[nr]
+		if (!Array.isArray(m)){return}
+		pustaMapa(m[0][0],m[0][1])
+		nawigacja.y=m[0][2]
+		nawigacja.x=m[0][3]
+		for (let a=1 ; a<3 ; a++)
+		{
+			for (let b=0 ; b<m[a].length ; b++)
+			{
+				mapa[m[a][b][0]][m[a][b][1]][m[a][b][2]].typ=[0,"odbiornik","nadajnik"][a]
+				mapa[m[a][b][0]][m[a][b][1]][m[a][b][2]].kolor=m[a][b][3]
+				mapa[m[a][b][0]][m[a][b][1]][m[a][b][2]].kierunek=m[a][b][4]
+				for (let c=0 ; c<4 ; c++)
+				{
+					if ((m[a][b][5]||[0,0,0,0,1])[c])
+					{laczenie(m[a][b][0],m[a][b][1],m[a][b][2],c,1,1)}
+				}
+				mapa[m[a][b][0]][m[a][b][1]][m[a][b][2]].polaczenia[4]=1
+				mapa[Math.abs(m[a][b][0]-1)][m[a][b][1]][m[a][b][2]].typ="pusty"
+				mapa[Math.abs(m[a][b][0]-1)][m[a][b][1]][m[a][b][2]].polaczenia=[0,0,0,0,0]
+			}
+		}
+		m[3]=m[3]||[]
+		for (let b=0 ; b<m[3].length ; b++)
+		{
+			mapa[m[3][b][0]][m[3][b][1]][m[3][b][2]].obrazek={typ:m[3][b][3],nr:m[3][b][4],kolor:m[3][b][5]}
+		}
+	}
+}
+function reakcjaNaKlikniecie(e)
+{
+	let y=(e.layerY/document.getElementById("c").clientHeight)*(d*100)
+	let x=[(e.layerX/document.getElementById("c").clientWidth)*(d*100),(d*100)-(e.layerX/document.getElementById("c").clientWidth)*(d*100)][nawigacja.strona]
+	if (Math.pow(Math.pow(y-0,2)+Math.pow(x-(d*50),2),0.5)<200)
+	{
+		if (nawigacja.y>0)
+		{
+			nawigacja.y--
+			return pokaz()
+		}
+	}
+	else if (Math.pow(Math.pow(y-(d*100),2)+Math.pow(x-(d*50),2),0.5)<200)
+	{
+		if (nawigacja.y<mapa[nawigacja.strona].length-2)
+		{
+			nawigacja.y++
+			return pokaz()
+		}
+	}
+	else if (Math.pow(Math.pow(y-(d*50),2)+Math.pow(x-0,2),0.5)<200)
+	{
+		if (nawigacja.x>0)
+		{
+			nawigacja.x--
+			return pokaz()
+		}
+	}
+	else if (Math.pow(Math.pow(y-(d*50),2)+Math.pow(x-(d*100),2),0.5)<200)
+	{
+		if (nawigacja.x<mapa[nawigacja.strona][0].length-2)
+		{
+			nawigacja.x++
+			return pokaz()
+		}
+	}
+	if (wygrana && !edycja){return}
+	let p1=[nawigacja.y+(Math.floor(y/100)-Math.floor(d/2)),nawigacja.x+(Math.floor(x/100)-Math.floor(d/2))]
+	let p2=[Math.floor(Math.floor(y%100)/25),Math.floor(Math.floor(x%100)/25)]
+	let a=[[-1,0,0,-1],[3,4,4,1],[3,4,4,1],[-1,2,2,-1]][p2[0]][p2[1]]
+	if (a>-1 && czyMoznaLaczyc(nawigacja.strona,p1[0],p1[1],a))
+	{
+		let t=[]
+		let s=nawigacja.strona
+		let r=mapa[s][p1[0]][p1[1]].polaczenia[a]
+		if (ostatniKlik[0]>0 && ostatniKlik[1]>0 && ostatniKlik[0]<mapa[s].length-1 && ostatniKlik[1]<mapa[s][0].length-1)
+		{
+			if ((ostatniKlik[2]==[0,1,2,3,-1][a] || ostatniKlik[2]==[2,3,0,1,-1][a]) && (ostatniKlik[0]==p1[0] || ostatniKlik[1]==p1[1]))
+			{
+				let i=[p1[0],p1[1]]
+				let j=[0,0]
+				if (ostatniKlik[0]<i[0]){j[0]=-1}
+				else if (ostatniKlik[0]>i[0]){j[0]=1}
+				if (ostatniKlik[1]<i[1]){j[1]=-1}
+				else if (ostatniKlik[1]>i[1]){j[1]=1}
+				if (j[0]+j[1]!=0 && ((j[0]!=0 && (a==0 || a==2)) || (j[1]!=0 && (a==1 || a==3))))
+				{
+					i[0]+=j[0]
+					i[1]+=j[1]
+					for (let z=0 ; z<777 ; z++)
+					{
+						if (!czyMoznaLaczyc(s,i[0],i[1],a))
+						{
+							t=[]
+							break
+						}
+						if (i[0]==ostatniKlik[0] && i[1]==ostatniKlik[1])
+						{
+							break
+						}
+						if (mapa[s][i[0]][i[1]].polaczenia[a]==r || mapa[s][i[0]][i[1]].polaczenia[[2,3,0,1,-1][a]]==r)
+						{
+							t.push([i[0],i[1]])
+						}
+						else
+						{
+							t=[]
+							break
+						}
+						i[0]+=j[0]
+						i[1]+=j[1]
+					}
+				}
+			}
+		}
+		r=Math.abs(r-1)
+		if (t.length>0)
+		{
+			laczenie(s,p1[0],p1[1],a,1,r)
+			for (let b=0 ; b<t.length ; b++)
+			{
+				laczenie(s,t[b][0],t[b][1],a,1,r)
+			}
+			laczenie(s,ostatniKlik[0],ostatniKlik[1],ostatniKlik[2],1,r)
+		}
+		else if (czyMoznaLaczyc(s,p1[0],p1[1],a))
+		{
+			laczenie(s,p1[0],p1[1],a)
+		}
+		else
+		{
+			ostatniKlik[0]=p1[0]
+			ostatniKlik[1]=p1[1]
+			ostatniKlik[2]=a
+			return
+		}
+		ostatniKlik[0]=p1[0]
+		ostatniKlik[1]=p1[1]
+		ostatniKlik[2]=a
+		test()
+		localStorage.setItem("mapa-plytkaPCB",JSON.stringify(mapa))
+		return pokaz()
+	}
+	else
+	{
+		ostatniKlik[0]=p1[0]
+		ostatniKlik[1]=p1[1]
+		ostatniKlik[2]=a
+		return
+	}
+}
+function laczenie(s,y,x,a,wymus,stan)
+{
+	if (a<0){return}
+	if (true)
+	{
+		let t1=mapa[s][y][x].polaczenia
+		if (wymus && (stan==1|| stan==0))
+		{
+			t1[a]=stan
+		}
+		else
+		{
+			t1[a]=Math.abs(t1[a]-1)
+		}
+		if (t1[a]!=0 && t1[a]!=1)
+		{
+			t1[a]=0
+		}
+		let t2=mapa[Math.abs(s-[0,0,0,0,1][a])][y+[-1,0,1,0,0][a]][x+[0,1,0,-1,0][a]].polaczenia
+		t2[[2,3,0,1,4][a]]=t1[a]
+	}
+}
+function czyMoznaLaczyc(s,y,x,a)
+{
+	if (y<1 || x<1){return}
+	if (y>mapa[0].length-2){return}
+	if (x>mapa[0][0].length-2){return}
+	if (a==4)
+	{
+		if(mapa[s][y][x].typ){return 0}
+		if(mapa[Math.abs(s-1)][y][x].typ){return 0}
+	}
+	if(mapa[s][y][x].typ=="pusty"){return 0}
+	if (mapa[Math.abs(s-[0,0,0,0,1][a])][y+[-1,0,1,0,0][a]][x+[0,1,0,-1,0][a]].typ=="pusty"){return 0}
+	else if (!edycja)
+	{
+		if(mapa[s][y][x].typ){return 0}
+		if (mapa[Math.abs(s-[0,0,0,0,1][a])][y+[-1,0,1,0,0][a]][x+[0,1,0,-1,0][a]].typ){return 0}
+	}
+	if (y+[-1,0,1,0,0][a]<1 || x+[0,1,0,-1,0][a]<1 || y+[-1,0,1,0,0][a]>mapa[s].length-2 || x+[0,1,0,-1,0][a]>mapa[s][0].length-2){return 0}
+	return 1
+}
+function pokaz()
+{
+	let elementy=[]
+	let s=nawigacja.strona
+	for (let y=0 ; y<d ; y++)
+	{
+		for (let x=0 ; x<d ; x++)
+		{
+			const yy=(nawigacja.y-Math.floor(d/2))+y
+			const xx=nawigacja.x+(Math.floor(d/2)*[-1,1][s])+(x*[1,-1][s])
+			if (yy>=1 && xx>=1 && yy<mapa[s].length-1 && xx<mapa[s][0].length-1)
+			{
+				let t=JSON.parse(JSON.stringify(mapa[Math.abs(s-1)][yy][xx]))
+				t=obrazekElementu(t)
+				for (let a=0 ; a<t.length ; a++)
+				{
+					let e=JSON.parse(JSON.stringify(t[a]))
+					e.kolor=["#396100","#00612f","red"][s]
+					if (e.typ=="kolo")
+					{
+						e.polozenieX=(x*100)+[e.polozenieX,(100-e.polozenieX)][s]
+						e.polozenieY=(y*100)+(e.polozenieY)
+					}
+					else if (e.typ=="prostakat")
+					{
+						e.polozenieX=(x*100)+[e.polozenieX,(100-e.polozenieX)-e.d][s]
+						e.polozenieY=(y*100)+(e.polozenieY)
+					}
+					else if (e.typ=="wielokat")
+					{
+						if (Array.isArray(e.punkty))
+						{
+							for (let b=0 ; b<e.punkty.length ; b++)
+							{
+								e.punkty[b][1]=(x*100)+[e.punkty[b][1],(100-e.punkty[b][1])][s]
+								e.punkty[b][0]=(y*100)+(e.punkty[b][0])
+							}
+						}
+					}
+					else {debugger;e=0}
+					if (e && typeof e=="object")
+					{
+						elementy.push(e)
+					}
+					else
+					{
+						console.log("błąd")
+					}
+				}
+			}
+			else
+			{
+				elementy.push({typ:"prostakat",polozenieX:x*100,polozenieY:y*100,d:100,h:100,kolor:"black"})
+			}
+		}
+	}
+	if (true)
+	{
+		for (let y=0 ; y<12 ; y++)
+		{
+			for (let x=0 ; x<12 ; x++)
+			{
+				for (let c=0 ; c<7 ; c++)
+				{
+					elementy.push({typ:"kolo",kolor:"#115711",polozenieY:y*100+[0,50,50,25,50,50,75][c],polozenieX:x*100+[50,50,0,50,25,75,50][c],r:[7,10,7,3,3,3,3][c]})
+				}
+			}
+		}
+	}
+	for (let y=0 ; y<d ; y++)
+	{
+		for (let x=0 ; x<d ; x++)
+		{
+			const yy=(nawigacja.y-Math.floor(d/2))+y
+			const xx=nawigacja.x+(Math.floor(d/2)*[-1,1][s])+(x*[1,-1][s])
+			if (yy>=1 && xx>=1 && yy<mapa[s].length-1 && xx<mapa[s][0].length-1)
+			{
+				let t=JSON.parse(JSON.stringify(mapa[s][yy][xx]))
+				t=obrazekElementu(t)
+				for (let a=0 ; a<t.length ; a++)
+				{
+					let e=JSON.parse(JSON.stringify(t[a]))
+					if (e.typ=="kolo")
+					{
+						e.polozenieX=(x*100)+[e.polozenieX,(100-e.polozenieX)][s]
+						e.polozenieY=(y*100)+(e.polozenieY)
+					}
+					else if (e.typ=="prostakat")
+					{
+						e.polozenieX=(x*100)+[e.polozenieX,(100-e.polozenieX)-e.d][s]
+						e.polozenieY=(y*100)+(e.polozenieY)
+					}
+					else if (e.typ=="wielokat")
+					{
+						if (Array.isArray(e.punkty))
+						{
+							for (let b=0 ; b<e.punkty.length ; b++)
+							{
+								e.punkty[b][1]=(x*100)+[e.punkty[b][1],(100-e.punkty[b][1])][s]
+								e.punkty[b][0]=(y*100)+(e.punkty[b][0])
+							}
+						}
+					}
+					else {debugger;e=0}
+					if (e && typeof e=="object")
+					{
+						elementy.push(e)
+					}
+					else
+					{
+						console.log("błąd")
+					}
+				}
+			}
+			else
+			{
+				elementy.push({typ:"prostakat",polozenieX:x*100,polozenieY:y*100,d:100,h:100,kolor:"black"})
+			}
+		}
+	}
+	for (let a=0 ; a<4 ; a++)
+	{
+		elementy.push({typ:"wielokat",kolor:"#c5b107",punkty:[[[50,d*50],[170,(d-1)*50],[170,(d+1)*50]],[[d*50,50],[(d-1)*50,170],[(d+1)*50,170]],[[(d*100)-50,d*50],[(d*100)-170,(d-1)*50],[(d*100)-170,(d+1)*50]],[[d*50,(d*100)-50],[(d-1)*50,(d*100)-170],[(d+1)*50,(d*100)-170]]][a]})
+		elementy.push({typ:"wielokat",kolor:"#9307b1",punkty:[[[70,d*50],[170,(d-1)*50],[170,(d+1)*50]],[[d*50,70],[(d-1)*50,170],[(d+1)*50,170]],[[(d*100)-70,d*50],[(d*100)-170,(d-1)*50],[(d*100)-170,(d+1)*50]],[[d*50,(d*100)-70],[(d-1)*50,(d*100)-170],[(d+1)*50,(d*100)-170]]][a]})
+	}
+	rysuj(elementy,"c",d)
+	elementy=[]
+	for (let y=1 ; y<Math.max(mapa[s].length,mapa[s][0].length)-1 ; y++)
+	{
+		for (let x=1 ; x<Math.max(mapa[s].length,mapa[s][0].length)-1 ; x++)
+		{
+			const yy=y
+			const xx=[x,Math.max(mapa[s].length,mapa[s][0].length)-(x+1)][s]
+			if (yy>=1 && xx>=1 && yy<mapa[s].length-1 && xx<mapa[s][0].length-1)
+			{
+				let t=JSON.parse(JSON.stringify(mapa[Math.abs(s-1)][yy][xx]))
+				t=obrazekElementu(t)
+				for (let a=0 ; a<t.length ; a++)
+				{
+					let e=JSON.parse(JSON.stringify(t[a]))
+					e.kolor=["#396100","#00612f","red"][s]
+					if (e.typ=="kolo")
+					{
+						e.polozenieX=((x-1)*100)+[e.polozenieX,(100-e.polozenieX)][s]
+						e.polozenieY=((y-1)*100)+(e.polozenieY)
+					}
+					else if (e.typ=="prostakat")
+					{
+						e.polozenieX=((x-1)*100)+[e.polozenieX,(100-e.polozenieX)-e.d][s]
+						e.polozenieY=((y-1)*100)+(e.polozenieY)
+					}
+					else if (e.typ=="wielokat")
+					{
+						if (Array.isArray(e.punkty))
+						{
+							for (let b=0 ; b<e.punkty.length ; b++)
+							{
+								e.punkty[b][1]=((x-1)*100)+[e.punkty[b][1],(100-e.punkty[b][1])][s]
+								e.punkty[b][0]=((y-1)*100)+(e.punkty[b][0])
+							}
+						}
+					}
+					else {debugger;e=0}
+					if (e && typeof e=="object")
+					{
+						elementy.push(e)
+					}
+					else
+					{
+						console.log("błąd")
+					}
+				}
+			}
+			else
+			{
+				elementy.push({typ:"prostakat",polozenieX:(x-1)*100,polozenieY:(y-1)*100,d:100,h:100,kolor:"black"})
+			}
+		}
+	}
+	for (let y=1 ; y<Math.max(mapa[s].length,mapa[s][0].length)-1 ; y++)
+	{
+		for (let x=1 ; x<Math.max(mapa[s].length,mapa[s][0].length)-1 ; x++)
+		{
+			const yy=y
+			const xx=[x,Math.max(mapa[s].length,mapa[0][0].length)-(x+1)][s]
+			if (yy>=1 && xx>=1 && yy<mapa[s].length-1 && xx<mapa[s][0].length-1)
+			{
+				let t=JSON.parse(JSON.stringify(mapa[s][yy][xx]))
+				t=obrazekElementu(t)
+				for (let a=0 ; a<t.length ; a++)
+				{
+					let e=JSON.parse(JSON.stringify(t[a]))
+					if (e.typ=="kolo")
+					{
+						e.polozenieX=((x-1)*100)+[e.polozenieX,(100-e.polozenieX)][s]
+						e.polozenieY=((y-1)*100)+(e.polozenieY)
+					}
+					else if (e.typ=="prostakat")
+					{
+						e.polozenieX=((x-1)*100)+[e.polozenieX,(100-e.polozenieX)-e.d][s]
+						e.polozenieY=((y-1)*100)+(e.polozenieY)
+					}
+					else if (e.typ=="wielokat")
+					{
+						if (Array.isArray(e.punkty))
+						{
+							for (let b=0 ; b<e.punkty.length ; b++)
+							{
+								e.punkty[b][1]=((x-1)*100)+[e.punkty[b][1],(100-e.punkty[b][1])][s]
+								e.punkty[b][0]=((y-1)*100)+(e.punkty[b][0])
+							}
+						}
+					}
+					else {debugger;e=0}
+					if (e && typeof e=="object")
+					{
+						elementy.push(e)
+					}
+					else
+					{
+						console.log("błąd")
+					}
+				}
+			}
+			else
+			{
+				elementy.push({typ:"prostakat",polozenieX:(x-1)*100,polozenieY:(y-1)*100,d:100,h:100,kolor:"black"})
+			}
+		}
+	}
+	rysuj(elementy,"minimapa",Math.max(mapa[s].length,mapa[s][0].length)-2)
+}
+function obrazekElementu(element)
+{
+	const kolory=[7,25,45,57,80,120,160,190,215,240,270,285,300,327]
+	let e=[]
+	let t=element.polaczenia
+	for (let a=0 ; a<5 ; a++)
+	{
+		if (t[a]!=0 && t[a]!=1){t[a]=0}
+	}
+	let q=JSON.parse(JSON.stringify(sciezki[t[0]][t[1]][t[2]][t[3]][t[4]]||[]))
+	for (let a=0 ; a<q.length ; a++)
+	{
+		e.push(q[a])
+	}
+	if (element.typ=="nadajnik")
+	{
+		if (!wygrana || edycja)
+		{
+			let w=[[70,70],[50,80],[80,50]][element.kierunek||0]
+			e.push({kolor:`hsl(${kolory[element.kolor||0]||0},80%,40%)`,typ:"prostakat",polozenieY:(100-w[0])/2,polozenieX:(100-w[1])/2,d:w[1],h:w[0]})
+			w[0]-=30;w[1]-=30
+			e.push({kolor:`#ffcf00`,typ:"prostakat",polozenieY:(100-w[0])/2,polozenieX:(100-w[1])/2,d:w[1],h:w[0]})
+		}
+		else
+		{
+			let w=[[70,70],[50,80],[80,50]][element.kierunek||0]
+			e.push({kolor:`black`,typ:"prostakat",polozenieY:(100-w[0])/2,polozenieX:(100-w[1])/2,d:w[1],h:w[0]})
+			w[0]-=10;w[1]-=10
+			e.push({kolor:`#ffcf00`,typ:"prostakat",polozenieY:(100-w[0])/2,polozenieX:(100-w[1])/2,d:w[1],h:w[0]})
+		}
+	}
+	else if (element.typ=="odbiornik")
+	{
+		if (!wygrana || edycja)
+		{
+			let w=35
+			if (element.kierunek){w=30}
+			let kolor=[`hsl(${kolory[element.kolor]},80%,40%`,`#4d462f`]
+			if (element.podlaczony==1){kolor=[`hsl(${kolory[element.kolor]},100%,50%`,`#ffedaa`]}
+			else if (element.podlaczony==-1){kolor=[`#ff2f2f`,`#4d462f`]}
+			e.push({kolor:kolor[0],typ:"kolo",polozenieY:50,polozenieX:50,r:w})
+			if (element.kierunek==1)
+			{
+				e.push({kolor:kolor[0],typ:"kolo",polozenieY:50,polozenieX:50+7,r:w})
+				e.push({kolor:kolor[0],typ:"kolo",polozenieY:50,polozenieX:50-7,r:w})
+			}
+			else if (element.kierunek==2)
+			{
+				e.push({kolor:kolor[0],typ:"kolo",polozenieY:50-7,polozenieX:50,r:w})
+				e.push({kolor:kolor[0],typ:"kolo",polozenieY:50+7,polozenieX:50,r:w})
+			}
+			w-=17
+			e.push({kolor:kolor[1],typ:"kolo",polozenieY:50,polozenieX:50,r:w})
+			if (element.kierunek==1)
+			{
+				e.push({kolor:kolor[1],typ:"kolo",polozenieY:50,polozenieX:50+7,r:w})
+				e.push({kolor:kolor[1],typ:"kolo",polozenieY:50,polozenieX:50-7,r:w})
+			}
+			else if (element.kierunek==2)
+			{
+				e.push({kolor:kolor[1],typ:"kolo",polozenieY:50-7,polozenieX:50,r:w})
+				e.push({kolor:kolor[1],typ:"kolo",polozenieY:50+7,polozenieX:50,r:w})
+			}
+		}
+		else
+		{
+			let w=[[70,70],[50,80],[80,50]][element.kierunek||0]
+			e.push({kolor:`black`,typ:"prostakat",polozenieY:(100-w[0])/2,polozenieX:(100-w[1])/2,d:w[1],h:w[0]})
+			w[0]-=10;w[1]-=10
+			e.push({kolor:`#ffcf00`,typ:"prostakat",polozenieY:(100-w[0])/2,polozenieX:(100-w[1])/2,d:w[1],h:w[0]})
+		}
+	}
+	else if (element.typ=="pusty")
+	{
+		e.push({kolor:`#cfcfcf`,typ:"kolo",polozenieY:50,polozenieX:50,r:20})
+	}
+	if (element.obrazek)
+	{
+		let q=obrazki[element.obrazek.typ||0][element.obrazek.nr||0]
+		for (let a=0 ; a<q.length ; a++)
+		{
+			let t=JSON.parse(JSON.stringify(q[a]))
+			if(!t.kolor){t.kolor=element.obrazek.kolor||"red"}
+			e.push(t)
+		}
+	}
+	return e
+}
+function test()
+{
+	wygrana=1
+	let t=0
+	for (let a=0 ; a<odbiorniki.length ; a++)
+	{
+		let t=sledz(odbiorniki[a][0],odbiorniki[a][1],odbiorniki[a][2],4,777)||[]
+		let z=[0,1]
+		for (let b=0 ; b<t.length ; b++)
+		{
+			if (t[b].typ=="nadajnik"){z[0]=1}
+			if (t[b].kolor!=mapa[odbiorniki[a][0]][odbiorniki[a][1]][odbiorniki[a][2]].kolor){z[1]=0;break}
+		}
+		if (z[0]&&z[1])
+		{
+			mapa[odbiorniki[a][0]][odbiorniki[a][1]][odbiorniki[a][2]].podlaczony=1
+		}
+		else if (!z[1])
+		{
+			mapa[odbiorniki[a][0]][odbiorniki[a][1]][odbiorniki[a][2]].podlaczony=-1
+			wygrana=0
+		}
+		else
+		{
+			mapa[odbiorniki[a][0]][odbiorniki[a][1]][odbiorniki[a][2]].podlaczony=0
+			wygrana=0
+		}
+	}
+	if (wygrana)
+	{
+		pokaz()
+	}
+}
+function sledz(c,y,x,w,z)
+{
+	let t=[]
+	if (mapa[c][y][x].typ && mapa[c][y][x].typ!="pusty")
+	{
+		t.push(mapa[c][y][x])
+	}
+	if (z>0)
+	{
+		let s=0
+		for (let a=0 ; a<5 ; a++){s+=mapa[c][y][x].polaczenia[a]||0}
+		if (s>0){s--}
+		for (let a=0 ; a<5 ; a++)
+		{
+			let u=[]
+			if (a!=w && mapa[c][y][x].polaczenia[a])
+			{
+				u=sledz(Math.abs(c-[0,0,0,0,1][a]),y+[-1,0,1,0,0][a],x+[0,1,0,-1,0][a],[2,3,0,1,4][a],Math.floor((z-1)/s))||[]
+			}
+			for (let b=0 ; b<u.length ; b++)
+			{
+				t.push(u[b])
+			}
+		}
+	}
+	return t
+}
+function aktualizujOdbiorniki()
+{
+	odbiorniki=[]
+	for (let c=0 ; c<2 ; c++)
+	{
+		for (let a=0 ; a<mapa[c].length ; a++)
+		{
+			for (let b=0 ; b<mapa[c][0].length ; b++)
+			{
+				if (mapa[c][a][b].typ=="odbiornik")
+				{
+					odbiorniki.push([c,a,b])
+				}
+			}
+		}
+	}
+}
+function rysuj(elementy,plutno,wielkosc,tlo)
+{
+	const canvas = document.getElementById(plutno)
+	canvas.height = wielkosc*100
+	canvas.width = wielkosc*100
+	const context = canvas.getContext("2d")
+	context.clearRect(0,0,1100,1100)
+	context.fillStyle=["#396100","#00612f","red"][nawigacja.strona]
+	for (let a=0 ; a<elementy.length ; a++)
+	{
+		context.fillStyle=elementy[a].kolor
+		if (elementy[a].typ=="kolo")
+		{
+			context.beginPath();
+			context.arc(elementy[a].polozenieX, elementy[a].polozenieY, elementy[a].r, 0, 2*Math.PI);
+			context.fill();
+		}
+		else if (elementy[a].typ=="prostakat")
+		{
+			context.fillRect(elementy[a].polozenieX, elementy[a].polozenieY, elementy[a].d, elementy[a].h);
+		}
+		else if (elementy[a].typ=="wielokat")
+		{
+			const p=elementy[a].punkty
+			if (Array.isArray(p))
+			{
+				if (p.length>2)
+				{
+					context.beginPath();
+					context.moveTo(p[0][1],p[0][0]);
+					for (let b=0 ; b<p.length ; b++)
+					{
+						context.lineTo(p[b][1],p[b][0]);
+					}
+					context.closePath();
+					context.fill();
+				}
+			}
+		}
+		else
+		{
+			console.log("błąd: ",elementy[a])
+		}
+	}
+}
+function odwroc()
+{
+	document.getElementById("c").style.width="0%"
+	document.getElementById("c").style.left="50%"
+	document.getElementById("minimapa").style.width="0%"
+	document.getElementById("minimapa").style.left="50%"
+	nawigacja.strona=Math.abs(nawigacja.strona-1)
+	setTimeout(()=>{document.getElementById("c").style.background=["#00612f","#396100","red"][nawigacja.strona]},500)
+	setTimeout(()=>{document.getElementById("minimapa").style.background=["#00612f","#396100","red"][nawigacja.strona]},500)
+	setTimeout(()=>{pokaz();document.getElementById("c").style.width="100%";document.getElementById("c").style.left="0%"},501)
+	setTimeout(()=>{pokaz();document.getElementById("minimapa").style.width="100%";document.getElementById("minimapa").style.left="0%"},501)
+}
+document.addEventListener("keydown",dodajElement)
+function dodajElement(e)
+{
+	if (e.key=="&")
+	{
+		edycja=1
+		pokaz()
+	}
+	if (e.key=="*")
+	{
+		edycja=1
+		noweRozdanie(1,1)
+		pokaz()
+	}
+	if (!edycja){return}
+	let s=nawigacja.strona
+	if (e.key=="!")
+	{
+		let e=[[mapa[0].length,mapa[0][0].length,nawigacja.y,nawigacja.x],[],[],[]]
+		for (let c=0 ; c<2 ; c++)
+		{
+			for (let a=0 ; a<mapa[c].length ; a++)
+			{
+				for (let b=0 ; b<mapa[c][0].length ; b++)
+				{
+					if (mapa[c][a][b].typ=="odbiornik")
+					{
+						e[1].push([c,a,b,mapa[c][a][b].kolor,(mapa[c][a][b].kierunek||0),mapa[c][a][b].polaczenia])
+					}
+					if (mapa[c][a][b].typ=="nadajnik")
+					{
+						e[2].push([c,a,b,mapa[c][a][b].kolor,(mapa[c][a][b].kierunek||0),mapa[c][a][b].polaczenia])
+					}
+					if (mapa[c][a][b].obrazek)
+					{
+						e[3].push([c,a,b,mapa[c][a][b].obrazek.typ||0,mapa[c][a][b].obrazek.nr||0,mapa[c][a][b].obrazek.kolor||0])
+					}
+				}
+			}
+		}
+		console.log(JSON.stringify(e))
+		return
+	}
+	if (ostatniKlik[2]!=4){return}
+	let t="qwertyuiopasdf"
+	for (let a=0 ; a<t.length ; a++)
+	{
+		for (let b=0 ; b<5 ; b++){if(mapa[Math.abs(nawigacja.strona-1)][ostatniKlik[0]][ostatniKlik[1]].polaczenia[b]){return}}
+		if (e.key.toLowerCase()==t[a])
+		{
+			mapa[nawigacja.strona][ostatniKlik[0]][ostatniKlik[1]].kolor=a
+			mapa[nawigacja.strona][ostatniKlik[0]][ostatniKlik[1]].polaczenia=[0,0,0,0,1]
+			if (e.key==t[a])
+			{
+				mapa[nawigacja.strona][ostatniKlik[0]][ostatniKlik[1]].typ="odbiornik"
+			}
+			else
+			{
+				mapa[nawigacja.strona][ostatniKlik[0]][ostatniKlik[1]].typ="nadajnik"
+			}
+			mapa[Math.abs(nawigacja.strona-1)][ostatniKlik[0]][ostatniKlik[1]]={polaczenia:[0,0,0,0,0],typ:"pusty"}
+			aktualizujOdbiorniki()
+			return pokaz()
+		}
+	}
+	t="m"
+	for (let a=0 ; a<t.length ; a++)
+	{
+		if (e.key.toLowerCase()==t[a])
+		{
+			mapa[nawigacja.strona][ostatniKlik[0]][ostatniKlik[1]].procesor=1
+			aktualizujOdbiorniki()
+			procesor()
+			return pokaz()
+		}
+	}
+	if (e.key=="X")
+	{
+		mapa[nawigacja.strona][ostatniKlik[0]][ostatniKlik[1]]={polaczenia:[0,0,0,0,0]}
+		mapa[Math.abs(nawigacja.strona-1)][ostatniKlik[0]][ostatniKlik[1]]={polaczenia:[0,0,0,0,0]}
+		aktualizujOdbiorniki()
+		procesor()
+		return pokaz()
+	}
+	if (mapa[nawigacja.strona][ostatniKlik[0]][ostatniKlik[1]].typ)
+	{
+		if (e.key=="1")
+		{
+			mapa[nawigacja.strona][ostatniKlik[0]][ostatniKlik[1]].kierunek=0
+		}
+		if (e.key=="2")
+		{
+			mapa[nawigacja.strona][ostatniKlik[0]][ostatniKlik[1]].kierunek=1
+		}
+		if (e.key=="3")
+		{
+			mapa[nawigacja.strona][ostatniKlik[0]][ostatniKlik[1]].kierunek=2
+		}
+		pokaz()
+	}
+	function procesor()
+	{
+		for (let y=1 ; y<Math.max(mapa[s].length,mapa[s][0].length)-1 ; y++)
+		{
+			for (let x=1 ; x<Math.max(mapa[s].length,mapa[s][0].length)-1 ; x++)
+			{
+				const yy=y
+				const xx=[x,Math.max(mapa[s].length,mapa[s][0].length)-(x+1)][s]
+				if (yy>=1 && xx>=1 && yy<mapa[s].length-1 && xx<mapa[s][0].length-1)
+				{
+					if(mapa[s][yy][xx].procesor)
+					{
+						mapa[s][yy][xx].obrazek={typ:1}
+						if (mapa[s][yy-1][xx].procesor)
+						{
+							if (mapa[s][yy-1][xx].procesor)
+							{
+								if (mapa[s][yy+1][xx].procesor)
+								{
+									if (mapa[s][yy][xx+1].procesor)
+									{
+										if (mapa[s][yy][xx-1].procesor)
+										{
+											mapa[s][yy][xx].obrazek.nr=6
+										}
+										else
+										{
+											mapa[s][yy][xx].obrazek.nr=6
+										}
+									}
+									else if (mapa[s][yy][xx-1].procesor)
+									{
+										mapa[s][yy][xx].obrazek.nr=2
+									}
+									else
+									{
+										mapa[s][yy][xx].obrazek.nr=9
+									}
+								}
+								else
+								{
+									if (mapa[s][yy][xx+1].procesor)
+									{
+										mapa[s][yy][xx].obrazek.nr=5
+									}
+									else if (mapa[s][yy][xx-1].procesor)
+									{
+										mapa[s][yy][xx].obrazek.nr=3
+									}
+									else
+									{
+										mapa[s][yy][xx].obrazek.nr=9
+									}
+								}
+							}
+							else if (mapa[s][yy+1][xx].procesor)
+							{
+								if (mapa[s][yy][xx+1].procesor)
+								{
+									mapa[s][yy][xx].obrazek.nr=7
+								}
+								else if (mapa[s][yy][xx-1].procesor)
+								{
+									mapa[s][yy][xx].obrazek.nr=1
+								}
+								else
+								{
+									mapa[s][yy][xx].obrazek.nr=9
+								}
+							}
+							else
+							{
+								mapa[s][yy][xx].obrazek.nr=9
+							}
+						}
+						if (mapa[s][yy-1][xx].procesor && mapa[s][yy+1][xx].procesor)
+						{
+							if (mapa[s][yy][xx+1].procesor && mapa[s][yy][xx-1].procesor)
+							{
+								mapa[s][yy][xx].obrazek.nr=8
+							}
+							else if (mapa[s][yy][xx+1].procesor)
+							{
+								mapa[s][yy][xx].obrazek.nr=6
+							}
+							else if (mapa[s][yy][xx-1].procesor)
+							{
+								mapa[s][yy][xx].obrazek.nr=2
+							}
+							else
+							{
+								mapa[s][yy][xx].obrazek.nr=9
+							}
+						}
+						else if (mapa[s][yy-1][xx].procesor)
+						{
+							if (mapa[s][yy][xx+1].procesor && mapa[s][yy][xx-1].procesor)
+							{
+								mapa[s][yy][xx].obrazek.nr=4
+							}
+							else if (mapa[s][yy][xx+1].procesor)
+							{
+								mapa[s][yy][xx].obrazek.nr=5
+							}
+							else if (mapa[s][yy][xx-1].procesor)
+							{
+								mapa[s][yy][xx].obrazek.nr=3
+							}
+							else
+							{
+								mapa[s][yy][xx].obrazek.nr=9
+							}
+						}
+						else if (mapa[s][yy+1][xx].procesor)
+						{
+							if (mapa[s][yy][xx+1].procesor && mapa[s][yy][xx-1].procesor)
+							{
+								mapa[s][yy][xx].obrazek.nr=0
+							}
+							else if (mapa[s][yy][xx+1].procesor)
+							{
+								mapa[s][yy][xx].obrazek.nr=7
+							}
+							else if (mapa[s][yy][xx-1].procesor)
+							{
+								mapa[s][yy][xx].obrazek.nr=1
+							}
+							else
+							{
+								mapa[s][yy][xx].obrazek.nr=9
+							}
+						}
+						else
+						{
+							mapa[s][yy][xx].obrazek.nr=9
+						}
+					}
+					else
+					{
+						mapa[s][yy][xx].obrazek=0
+					}
+				}
+			}
+		}
+	}
+}
+</script>
+<body onload="start()" style="background: black; color:white; font-size: 17px;">
+<div class="pr">
+<canvas id="c" width="1100" height="1100" style="left: 0%; height: 100%; width: 100%; background: gray;"></canvas>
+</div>
+<div id="menu">
+	<div class="guzik"><b>&hArr;</b></div>
+	<div class="guzik"><b>N</b></div>
+</div>
+<div class="pr">
+<canvas id="minimapa" width="1100" height="1100" style="left: 0%; height: 100%; width: 100%; background: gray;"></canvas>
+</div>
+</body>
+</html>
