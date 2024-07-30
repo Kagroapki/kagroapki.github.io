@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<title>CashCounter</title>
+<meta charset="utf-8"/>
+<style type="text/css">
+	*
+	{
+		margin: 0;
+		padding: 0;
+		background: rgba(0,0,0,0);
+		color: var(--color_7);
+		font-size: 2vh;
+		line-height: 1.2em;
+		font-family: "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+		/*theme: rgb(0,57,37)*/
+	}
+	html
+	{
+		background: var(--color_1);
+	}
+	a
+	{
+		text-decoration: none;
+	}
+	button
+	{
+		border: none;
+		color: var(--color_5);
+		transition: 0.2s;
+	}
+	button:hover
+	{
+		color: var(--color_7);
+	}
+</style>
+<style type="text/css">
+	#mainDiv
+	{
+		position: relative;
+		top: 1vh;
+		left: 50%;
+		min-height: 88vh;
+		width: 49vh;
+		margin-left: -24.5vh;
+	}
+	.section
+	{
+		position: relative;
+		box-sizing: border-box;
+		width: 100%;
+		min-height: 2vh;
+		margin-top: 1.5vh;
+		margin-bottom: 1.5vh;
+		padding-top: 0.2vh;
+		padding-bottom: 2vh;
+		background: var(--color_2);
+	}
+	.title
+	{
+		width: 100%;
+		font-size: 2.2vh;
+		color: var(--color_7);
+		padding: 0.7vh;
+		text-align: center;
+		font-weight: 700;
+	}
+	#budgetValue
+	{
+		position: relative;
+		box-sizing: border-box;
+		width: 90%;
+		min-height: 4vh;
+		margin-left: 5%;
+		margin-top: 0.5vh;
+		margin-bottom: 0.5vh;
+		background: var(--color_3);
+		border: solid 0.3vh var(--color_4);
+		font-size: 1.7vh;
+		color: var(--color_6);
+		padding: 0.7vh;
+		text-align: center;
+	}
+	#productsBox
+	{
+		position: relative;
+		box-sizing: border-box;
+		width: 100%;
+		min-width: 5vh;
+		margin-top: 0.5vh;
+		margin-bottom: 2vh;
+	}
+	.productValue
+	{
+		position: relative;
+		box-sizing: border-box;
+		width: 90%;
+		min-height: 4vh;
+		margin-left: 5%;
+		margin-top: 0.5vh;
+		margin-bottom: 0.5vh;
+		background: var(--color_3);
+		border: solid 0.3vh var(--color_4);
+		font-size: 1.7vh;
+		color: var(--color_6);
+		padding: 0.7vh;
+		text-align: center;
+	}
+	.button
+	{
+		position: relative;
+		box-sizing: border-box;
+		width: 90%;
+		min-height: 4vh;
+		margin-left: 5%;
+		margin-top: 1vh;
+		margin-bottom: 1vh;
+		background: var(--color_3);
+		border: solid 0.3vh var(--color_4);
+		font-size: 2vh;
+		font-weight: 500;
+		color: var(--color_6);
+		padding: 0.7vh;
+		text-align: center;
+		border-radius: 1vh;
+	}
+	#resultInfo
+	{
+		width: 100%;
+		font-size: 2vh;
+		color: var(--color_7);
+		padding: 0.7vh;
+		text-align: center;
+		font-weight: 500;
+	}
+	#resultRow
+	{
+		position: relative;
+		box-sizing: border-box;
+		width: 96%;
+		margin-left: 2%;
+		height: 4vh;
+		background: var(--color_1);
+	}
+	.belt
+	{
+		height: 100%;
+		float: left;
+	}
+</style>
+<script type="text/javascript">
+	function load()
+	{
+	    for (let i=0 ; i<7 ; i++)
+	    {
+	    	const color=`hsl(${127+(i*3)},${100-(i*10)}%,${5+(i*5)}%)`
+	    	document.documentElement.style.setProperty(`--color_${i+1}`, color)
+	    }
+	    document.getElementById("productAdd").onclick=addProduct
+	    document.getElementById("calc").onclick=calc
+	}
+	function addProduct()
+	{
+		const productValue=document.createElement("input")
+		productValue.type="number"
+		productValue.className="productValue"
+		document.getElementById("productsBox").appendChild(productValue)
+	}
+	function calc()
+	{
+		const budget=Number(document.getElementById("budgetValue").value||"")
+		if (budget<0.01)
+		{
+			document.getElementById("resultInfo").innerHTML="najpier wpisz, ile masz pieniędzy"
+			return
+		}
+		const relativity=(budget*1.5)+10
+		let sumProducts=0
+		const productsValue=document.getElementsByClassName("productValue")
+		for (const products of productsValue)
+		{
+			const v=Math.round(Number(products.value.replace(",","."))*100)/100
+			products.value=v
+			sumProducts+=v
+		}
+		if (sumProducts<0.01)
+		{
+			document.getElementById("resultInfo").innerHTML="nie podałeś cen produktów"
+			return
+		}
+		else if (sumProducts>budget)
+		{
+			document.getElementById("resultInfo").innerHTML="nie wystarczy :("
+		}
+		else if (budget-sumProducts>0.05)
+		{
+			document.getElementById("resultInfo").innerHTML=`wystarczy! zostanie ${cashValue(budget-sumProducts)} :)`
+		}
+		else
+		{
+			document.getElementById("resultInfo").innerHTML="wystarczy! :)"
+		}
+		//
+		const resultRow=document.getElementById("resultRow")
+		resultRow.innerHTML=""
+		let belt=document.createElement("div")
+		belt.className="belt"
+		belt.style.background="#00d9f7"
+		belt.style.width=`${(Math.min(budget,sumProducts)/relativity)*100}%`
+		resultRow.appendChild(belt)
+		//
+		belt=document.createElement("div")
+		belt.className="belt"
+		belt.style.background="#b1f700"
+		belt.style.width=`${(Math.max(0,budget-sumProducts)/relativity)*100}%`
+		resultRow.appendChild(belt)
+		//
+		belt=document.createElement("div")
+		belt.className="belt"
+		belt.style.background="#ff251b"
+		belt.style.width=`${(Math.min(Math.max(0,sumProducts-budget),relativity-budget)/relativity)*100}%`
+		resultRow.appendChild(belt)
+	}
+	function cashValue(value)
+	{
+		let giveBack=`${Math.round((value*100)%100)}`
+		if (giveBack.length<2)
+		{
+			giveBack+="0"
+		}
+		giveBack=`${Math.floor(value)},${giveBack}zł`
+		return giveBack
+	}
+</script>
+<body onload="load()">
+	<div id="mainDiv">
+		<div class="section" id="result">
+			<div class="title">Wynik:</div>
+			<div id="resultInfo"></div>
+			<div id="resultRow"></div>
+		</div>
+		<div class="section" id="budget">
+			<div class="title">Twój Budżet:</div>
+			<input type="number" id="budgetValue"/>
+		</div>
+		<div class="section" id="products">
+			<div class="title">Ceny Produktów:</div>
+			<div id="productsBox">
+				<input type="number" class="productValue"/>
+			</div>
+			<div id="productAdd" class="button">Następny Produkt</div>
+			<div id="calc" class="button">Przelicz</div>
+		</div>
+	</div>
+</body>
+</html>
