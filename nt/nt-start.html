@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<title>Notatnik Tras</title>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="NTstyle.css">
+<style type="text/css">
+	#startButton
+	{
+		position: relative;
+		box-sizing: border-box;
+		width: calc(100% - 4vh);
+		height: 7vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1vh;
+		margin: 2vh;
+		background: var(--color_2);
+		border-radius: 1vh;
+		font-size: 2.4vh;
+		font-weight: 500;
+	}
+</style>
+<script src="NTscript.js"></script>
+<script type="text/javascript">
+	function mainFunction()
+	{
+		if (Number(localStorage.getItem("version")||"0") < 1)
+		{
+			localStorage.setItem("version","1")
+		}
+		if (!entries || !cars || !places)
+		{
+			if (localStorage.getItem("cars") || localStorage.getItem("entries") || localStorage.getItem("places"))
+			{
+				HTMLoperations.info("Wygląda na to, że dane zostały uszkodzone.<br>Jeżeli zaczniesz od nowa, to co zostało zostanie utracone.")
+			}
+			document.getElementById("startButton").innerHTML = "Załóż Profil"
+			document.getElementById("startButton").onclick = newProfile
+		}
+		else
+		{
+			document.getElementById("startButton").innerHTML = "Wczytaj Profil"
+			document.getElementById("startButton").onclick = continueProfile
+		}
+	}
+	function newProfile()
+	{
+		localStorage.setItem("version","1")
+		data.save.cars([{name:"Nie Podano",active:1,color:[7,7]},{name:"CIEZAROWKA",active:1,color:[17,0]}])
+		data.save.places([{name:"Nie Podano",types:{},color:[7,7]},{name:"Baza",types:{base:1,service:1},color:[17,0]}])
+		data.save.entries(["!"])
+		location.assign("nt-main.html")
+	}
+	function continueProfile()
+	{
+		location.assign("nt-main.html")
+	}
+</script>
+<body onload="load()">
+	<main>
+		<div id="caption">Start Programu</div>
+		Hej! Uruchomiłeś program <b>Notatnik Tras</b><br>
+		Program ten jest skierowany do kierowców ciężarówek i służy do notowania wyjazdów i przyjazdów z tras, oraz do zapisu zdarzeń w trasie.<br>
+		W przeciwieństwie do notatek w kalendarzu będziesz mógł sprawdzić statystyki, sprawniej przeglądać wpisy i w łatwy sposób przekazać dane szefowi.
+		<div id="startButton">Jeżeli widzisz ten napis, coś poszło nie tak...</div>
+	</main>
+	<nav>
+		<a class="navButton navButtonHiden" id="selectedCar"></a>
+		<a class="navButton navButtonHiden" id="hamburgerButton"></a>
+		<a class="navButton navButtonHiden" id="addEntry"></a>
+	</nav>
+	<div id="menuWindow" class="window windowHiden">
+		<div class="closeButton">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 121.31 122.876"><path fill="#e30007" d="M90.914,5.296c6.927-7.034,18.188-7.065,25.154-0.068 c6.961,6.995,6.991,18.369,0.068,25.397L85.743,61.452l30.425,30.855c6.866,6.978,6.773,18.28-0.208,25.247 c-6.983,6.964-18.21,6.946-25.074-0.031L60.669,86.881L30.395,117.58c-6.927,7.034-18.188,7.065-25.154,0.068 c-6.961-6.995-6.992-18.369-0.068-25.397l30.393-30.827L5.142,30.568c-6.867-6.978-6.773-18.28,0.208-25.247 c6.983-6.963,18.21-6.946,25.074,0.031l30.217,30.643L90.914,5.296L90.914,5.296z"/></svg>
+		</div>
+	</div>
+	<div id="infoWindow" class="windowHiden">
+		<div id="infoWindowContent"></div>
+		<div id="infoWindowAnswers"></div>
+	</div>
+</body>
+</html>

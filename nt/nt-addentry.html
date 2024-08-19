@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<title>Notatnik Tras</title>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="NTstyle.css">
+<style type="text/css">
+	#editEntry
+	{
+		width: 100%;
+		margin-top: 2.5vh;
+	}
+	#entryTitle
+	{
+		position: relative;
+		box-sizing: border-box;
+		width: 100%;
+		min-height: 1em;
+		padding: 0.5vh;
+		font-size: 3vh;
+		font-weight: 500;
+		text-align: center;
+	}
+	#entryTime
+	{
+		position: relative;
+		box-sizing: border-box;
+		width: 100%;
+		min-height: 3vh;
+		padding: 0.5vh;
+		margin-top: 2vh;
+	}
+	.gapBox
+	{
+		position: relative;
+		margin: 0.5vh;
+		padding: 0.4vh;
+		width: 22vh;
+		left: 50%;
+		margin-left: -11vh;
+		background: var(--color_3);
+		border: solid 0.3vh var(--color_1);
+		border-radius: 0.5vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	#dateRow
+	{
+		position: relative;
+		margin: 0.5vh;
+		padding: 0.1vh;
+		left: 50%;
+		width: 40vh;
+		margin-left: -20vh;
+		height: 3.4vh;
+		background: white;
+		color: black;
+		text-align: center;
+		font-size: 2.4vh;
+		font-weight: 500;
+		border: solid 0.3vh var(--color_1);
+		box-shadow: inset 0 0 1vh 0.2vh black;
+	}
+	.gap
+	{
+		position: relative;
+		width: 3.2vh;
+		height: 5vh;
+		margin-left: 0.1vh;
+		margin-right: 0.1vh;
+		font-size: 3.4vh;
+		font-weight: 700;
+		background: white;
+		color: black;
+		border: solid 0.3vh var(--color_2);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: inset 0 0 1vh 0.2vh black;
+	}
+	.valueRow
+	{
+		position: relative;
+		box-sizing: border-box;
+		width: 100%;
+		height: 4.5vh;
+		margin-top: 1.5vh;
+		margin-bottom: 1.5vh;
+	}
+	.valueRowName
+	{
+		position: relative;
+		box-sizing: border-box;
+		float: left;
+		width: 47%;
+		height: 100%;
+		font-size: 2.2vh;
+		display: flex;
+		align-items: center;
+		justify-content: end;
+		color: var(--color_7);
+	}
+	.valueRowValue
+	{
+		position: relative;
+		box-sizing: border-box;
+		float: right;
+		width: 47%;
+		margin-right: 1vh;
+		height: 100%;
+		font-size: 2.4vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: white;
+		color: black;
+		border: solid 0.3vh var(--color_1);
+		box-shadow: inset 0 0 1vh 0.1vh black;
+	}
+	#inputValue
+	{
+		position: relative;
+		box-sizing: border-box;
+		width: 90%;
+		left: 5%;
+		height: 7vh;
+		font-size: 4vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: white;
+		color: black;
+		text-align: center;
+		border: solid 0.3vh var(--color_1);
+		box-shadow: inset 0 0 1vh 0.1vh black;
+	}
+</style>
+<script src="NTscript.js"></script>
+<script type="text/javascript">
+	let entry = 0
+	let packageEdit = 0
+	function selectPackageEdit()
+	{
+		if (entries.length<1)
+		{
+			entries.push([])
+		}
+		const t = entries[entries.length-1]
+		if (t.length == 0)
+		{
+			return t
+		}
+		if (t[t.length-1].type == "b")
+		{
+			entries.push([])
+		}
+		return entries[entries.length-1]
+	}
+	function mainFunction()
+	{
+		if (!entries || !cars || !places)
+		{
+			return location.assign("nt-start.html")
+		}
+		packageEdit = selectPackageEdit()
+		if (!packageEdit)
+		{
+			return HTMLoperations.info("Aplikacja napotkała błąd który uniemożliwia włączenie edycji wpisów.")
+		}
+		document.getElementById("addEntry").onclick = addTypesEntry
+		document.getElementById("saveButton").onclick = edit.save
+		addTypesEntry()
+		showPackage()
+		data.test()
+		function addTypesEntry()
+		{
+			if (packageEdit.length>0)
+			{
+				const t1 = packageEdit[packageEdit.length-1]
+				const t2 = typesOfEntries[t1.type].structure
+				for (let i=0 ; i<t2.length ; i++)
+				{
+					if (t2[i].required)
+					{
+						if (t1[t2[i].name] == t2[i].default)
+						{
+							return edit.start(packageEdit.length-1)
+						}
+					}
+				}
+			}
+			const aktiveTypes = []
+			for (let key in typesOfEntries)
+			{
+				if (((typesOfEntries[key].test) || new Function("return true"))(packageEdit))
+				{
+					typesOfEntries[key].type = key
+					aktiveTypes.push(typesOfEntries[key])
+				}
+			}
+			if (!(aktiveTypes.length > 0))
+			{
+				HTMLoperations.showWindow("typeWindow",0,1)
+				HTMLoperations.info("Nie ma możliwych wpisów. Zgłoś błąd autorowi aplikacji.")
+				return 0
+			}
+			else if (aktiveTypes.length == 1)
+			{
+				return edit.NewStart(aktiveTypes[0])
+			}
+			else
+			{
+				const listOfTypes = document.getElementById("listOfTypes")
+				listOfTypes.innerHTML = ""
+				for (let i=0 ; i<aktiveTypes.length ; i++)
+				{
+					const menuRow = document.createElement("div")
+					menuRow.className = "menuRow"
+					menuRow.onclick = ()=>{edit.NewStart(aktiveTypes[i])}
+					//
+					const menuText = document.createElement("a")
+					menuText.className = "menuText"
+					menuText.innerHTML = aktiveTypes[i].name
+					//
+					const menuSymbol = document.createElement("a")
+					menuSymbol.className = "menuSymbol"
+					menuSymbol.innerHTML = aktiveTypes[i].symbol||""
+					//
+					menuRow.appendChild(menuText)
+					menuRow.appendChild(menuSymbol)
+					listOfTypes.appendChild(menuRow)
+				}
+				return HTMLoperations.showWindow("typeWindow",1)
+			}
+		}
+		function showPackage()
+		{
+			for (let entry of packageEdit)
+			{
+				const mainRow = document.createElement("div")
+				mainRow.className = "mainRow"
+				mainRow.innerHTML = `${(typesOfEntries[entry.type]||{}).name||"BŁĄD"} o ${data.showToUser.time(entry.time)} dnia ${data.showToUser.date(entry.time)}<br>`
+				const structure = typesOfEntries[entry.type].structure
+				for (let i=0 ; i<structure.length ; i++)
+				{
+					if (entry[structure[i].name] != structure[i].default || structure[i].required)
+					{
+						mainRow.innerHTML += `${structure[i].namePL||structure[i].name}: ${data.showToUser[structure[i].showToUser](entry[structure[i].name])}<br>`
+					}
+				}
+				main.appendChild(mainRow)
+			}
+		}
+	}
+	edit=
+	{
+		NewStart: function(types)
+		{
+			entry = {}
+			packageEdit[packageEdit.length] = entry
+			entry.type = types.type
+			entry.time = new Date()
+			edit.updateeditEntry()
+			HTMLoperations.showWindow("typeWindow",0,1)
+			setTimeout(()=>{HTMLoperations.showWindow("editEntryWindow")},100)
+		},
+		start: function(nr)
+		{
+			if (!packageEdit[nr]) {return}
+			entry = packageEdit[nr]
+			edit.updateeditEntry()
+			HTMLoperations.showWindow("typeWindow",0,1)
+			setTimeout(()=>{HTMLoperations.showWindow("editEntryWindow")},100)
+		},
+		updateeditEntry: function()
+		{
+			if (!entry || typeof entry!="object")
+			{
+				return location.reload()
+			}
+			const type = typesOfEntries[entry.type]
+			document.getElementById("entryTitle").innerHTML = type.name
+			document.getElementById("h1").innerHTML = Math.floor(entry.time.getHours()/10)
+			document.getElementById("h2").innerHTML = entry.time.getHours()%10
+			document.getElementById("min1").innerHTML = Math.floor(entry.time.getMinutes()/10)
+			document.getElementById("min2").innerHTML = entry.time.getMinutes()%10
+			document.getElementById("dateRow").innerHTML = data.showToUser.date(entry.time)
+			//
+			const editEntryDiv = document.getElementById("editEntry")
+			editEntryDiv.innerHTML = ""
+			for (let i=0 ; i<typesOfEntries[entry.type].structure.length ; i++)
+			{
+				const t = typesOfEntries[entry.type].structure[i]
+				if (!entry[t.name])
+				{
+					entry[t.name] = t.default || 0
+				}
+				//
+				const valueRow = document.createElement("div")
+				valueRow.className = "valueRow"
+				valueRow.onclick = ()=>{edit.select[t.select||"default"](t.name,t.acceptable)}
+				//
+				const valueRowName = document.createElement("div")
+				valueRowName.className = "valueRowName"
+				valueRowName.innerHTML = `${t.namePL||t.name}:`
+				//
+				const valueRowValue = document.createElement("div")
+				valueRowValue.className = "valueRowValue"
+				valueRowValue.innerHTML = data.showToUser[t.showToUser](entry[t.name])
+				if (t.required)
+				{
+					if (entry[t.name] == t.default)
+					{
+						valueRowValue.style.borderColor = "#f70707"
+					}
+					else
+					{
+						valueRowValue.style.borderColor = "#b1f707"
+					}
+				}
+				//
+				valueRow.appendChild(valueRowName)
+				valueRow.appendChild(valueRowValue)
+				editEntryDiv.appendChild(valueRow)
+			}
+		},
+		save: function()
+		{
+			if (!entry || typeof entry!="object")
+			{
+				return HTMLoperations.info("Coś poszło nie tak podczas tworzenia wpisu.",[{text:"OK",function:function(){location.reload()}}])
+			}
+			let t = 0
+			for (let i=packageEdit.length-1 ; i>=0 ; i--)
+			{
+				if (t && packageEdit[i])
+				{
+					if ((t.time - packageEdit[i].time) < 1)
+					{
+						return HTMLoperations.info("Sprawdź kolejność wpisów i ich czas.<br>Wpisy zawierają błędy związane z czasem.")
+					}
+				}
+				t = packageEdit[i]
+			}
+			const message = data.save.entries(entries)
+			if (message)
+			{
+				return HTMLoperations.info(message)
+			}
+			else
+			{
+				HTMLoperations.info("Wpis zachowany.",[{text:"OK",function:function(){location.reload()}}])
+				setTimeout(()=>{location.reload()},3000)
+			}
+		},
+		select:
+		{
+			confirm: function(valueName,value)
+			{
+				if (!entry || typeof entry!="object")
+				{
+					return HTMLoperations.info("Wystąpił błąd.<br>Brak edytowanego wpisu.")
+				}
+				if (!valueName)
+				{
+					return HTMLoperations.info("Wystąpił błąd.<br>Brak danych dla edytowanego wpisu")
+				}
+				entry[valueName] = value
+				edit.updateeditEntry()
+				HTMLoperations.showWindow("selectWindow",0,1)
+			},
+			default: function(valueName)
+			{
+				console.log(valueName)
+			},
+			car: function(valueName)
+			{
+				const listOfselect = document.getElementById("listOfselect")
+				listOfselect.innerHTML = ""
+				for (let i=0 ; i<cars.length ; i++)
+				{
+					if (!cars[i].active) {continue}
+					const menuRow = document.createElement("div")
+					menuRow.className = "menuRow"
+					menuRow.onclick = ()=>{edit.select.confirm(valueName,i)}
+					//
+					const mainButton = document.createElement("div")
+					mainButton.className = "mainButton"
+					mainButton.innerHTML = (cars[i].name||"BŁĄD").toUpperCase()
+					mainButton.style.border = `solid 0.7vh ${HTMLoperations.htmlColor(cars[i].color)}`
+					//
+					menuRow.appendChild(mainButton)
+					listOfselect.appendChild(menuRow)
+				}
+				HTMLoperations.showWindow("selectWindow",1)
+			},
+			place: function(valueName,acceptable)
+			{
+				const listOfselect = document.getElementById("listOfselect")
+				listOfselect.innerHTML = ""
+				const acceptPlaces = [places[0]]
+				for (let i=1 ; i<places.length ; i++)
+				{
+					let t = 0
+					if ((acceptable||[]).length<1)
+					{
+						t = 1
+					}
+					for (let j=0 ; j<(acceptable||[]).length ; j++)
+					{
+						if (places[i].types[acceptable])
+						{
+							t = 1
+							break
+						}
+					}
+					if (t)
+					{
+						acceptPlaces.push(places[i])
+					}
+				}
+				if (acceptPlaces.length<2)
+				{
+					for (let i=1 ; i<places.length ; i++)
+					{
+						acceptPlaces.push(places[i])
+					}
+				}
+				for (let i=0 ; i<acceptPlaces.length ; i++)
+				{
+					const menuRow = document.createElement("div")
+					menuRow.className = "menuRow"
+					menuRow.onclick = ()=>{edit.select.confirm(valueName,i)}
+					//
+					const mainButton = document.createElement("div")
+					mainButton.className = "mainButton"
+					mainButton.innerHTML = (places[i].name||"BŁĄD").toUpperCase()
+					mainButton.style.border = `solid 0.7vh ${HTMLoperations.htmlColor(places[i].color)}`
+					//
+					menuRow.appendChild(mainButton)
+					listOfselect.appendChild(menuRow)
+				}
+				HTMLoperations.showWindow("selectWindow",1)
+			},
+			value: function(valueName)
+			{
+				const listOfselect = document.getElementById("listOfselect")
+				listOfselect.innerHTML = ""
+				if (true)
+				{
+					const menuRow = document.createElement("div")
+					menuRow.className = "menuRow"
+					//
+					const input = document.createElement("input")
+					input.type = "number"
+					input.id = "inputValue"
+					//
+					menuRow.appendChild(input)
+					listOfselect.appendChild(menuRow)
+				}
+				if (true)
+				{
+					const menuRow = document.createElement("div")
+					menuRow.className = "menuRow"
+					menuRow.onclick = ()=>{edit.select.confirm(valueName,Number(document.getElementById("inputValue").value)||0)}
+					//
+					const mainButton = document.createElement("div")
+					mainButton.className = "mainButton"
+					mainButton.innerHTML = "Zatwierdź"
+					//
+					menuRow.appendChild(mainButton)
+					listOfselect.appendChild(menuRow)
+				}
+				HTMLoperations.showWindow("selectWindow",1)
+			}
+		}
+	}
+</script>
+<body onload="load()">
+	<main>
+		<div id="caption">Dodawanie Wpisów</div>
+	</main>
+	<nav>
+		<a class="navButton navButtonHiden" id="selectedCar"></a>
+		<a class="navButton" id="hamburgerButton">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.879 103.609"><path fill="var(--color_5)" d="M10.368,0h102.144c5.703,0,10.367,4.665,10.367,10.367v0 c0,5.702-4.664,10.368-10.367,10.368H10.368C4.666,20.735,0,16.07,0,10.368v0C0,4.665,4.666,0,10.368,0L10.368,0z M10.368,82.875 h102.144c5.703,0,10.367,4.665,10.367,10.367l0,0c0,5.702-4.664,10.367-10.367,10.367H10.368C4.666,103.609,0,98.944,0,93.242l0,0 C0,87.54,4.666,82.875,10.368,82.875L10.368,82.875z M10.368,41.438h102.144c5.703,0,10.367,4.665,10.367,10.367l0,0 c0,5.702-4.664,10.368-10.367,10.368H10.368C4.666,62.173,0,57.507,0,51.805l0,0C0,46.103,4.666,41.438,10.368,41.438 L10.368,41.438z"/></svg>
+		</a>
+		<a class="navButton" id="addEntry">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 121.48 122.88"><path fill="var(--color_5)" d="M96.84,2.22l22.42,22.42c2.96,2.96,2.96,7.8,0,10.76l-12.4,12.4L73.68,14.62l12.4-12.4 C89.04-0.74,93.88-0.74,96.84,2.22L96.84,2.22z M70.18,52.19L70.18,52.19l0,0.01c0.92,0.92,1.38,2.14,1.38,3.34 c0,1.2-0.46,2.41-1.38,3.34v0.01l-0.01,0.01L40.09,88.99l0,0h-0.01c-0.26,0.26-0.55,0.48-0.84,0.67h-0.01 c-0.3,0.19-0.61,0.34-0.93,0.45c-1.66,0.58-3.59,0.2-4.91-1.12h-0.01l0,0v-0.01c-0.26-0.26-0.48-0.55-0.67-0.84v-0.01 c-0.19-0.3-0.34-0.61-0.45-0.93c-0.58-1.66-0.2-3.59,1.11-4.91v-0.01l30.09-30.09l0,0h0.01c0.92-0.92,2.14-1.38,3.34-1.38 c1.2,0,2.41,0.46,3.34,1.38L70.18,52.19L70.18,52.19L70.18,52.19z M45.48,109.11c-8.98,2.78-17.95,5.55-26.93,8.33 C-2.55,123.97-2.46,128.32,3.3,108l9.07-32v0l-0.03-0.03L67.4,20.9l33.18,33.18l-55.07,55.07L45.48,109.11L45.48,109.11z M18.03,81.66l21.79,21.79c-5.9,1.82-11.8,3.64-17.69,5.45c-13.86,4.27-13.8,7.13-10.03-6.22L18.03,81.66L18.03,81.66z"/></svg>
+		</a>
+	</nav>
+	<div id="menuWindow" class="window windowHiden">
+		<div class="closeButton">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 121.31 122.876"><path fill="#e30007" d="M90.914,5.296c6.927-7.034,18.188-7.065,25.154-0.068 c6.961,6.995,6.991,18.369,0.068,25.397L85.743,61.452l30.425,30.855c6.866,6.978,6.773,18.28-0.208,25.247 c-6.983,6.964-18.21,6.946-25.074-0.031L60.669,86.881L30.395,117.58c-6.927,7.034-18.188,7.065-25.154,0.068 c-6.961-6.995-6.992-18.369-0.068-25.397l30.393-30.827L5.142,30.568c-6.867-6.978-6.773-18.28,0.208-25.247 c6.983-6.963,18.21-6.946,25.074,0.031l30.217,30.643L90.914,5.296L90.914,5.296z"/></svg>
+		</div>
+	</div>
+	<div id="typeWindow" class="window windowHiden">
+		<div class="closeButton">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 121.31 122.876"><path fill="#e30007" d="M90.914,5.296c6.927-7.034,18.188-7.065,25.154-0.068 c6.961,6.995,6.991,18.369,0.068,25.397L85.743,61.452l30.425,30.855c6.866,6.978,6.773,18.28-0.208,25.247 c-6.983,6.964-18.21,6.946-25.074-0.031L60.669,86.881L30.395,117.58c-6.927,7.034-18.188,7.065-25.154,0.068 c-6.961-6.995-6.992-18.369-0.068-25.397l30.393-30.827L5.142,30.568c-6.867-6.978-6.773-18.28,0.208-25.247 c6.983-6.963,18.21-6.946,25.074,0.031l30.217,30.643L90.914,5.296L90.914,5.296z"/></svg>
+		</div>
+		<div id="listOfTypes"></div>
+	</div>
+	<div id="editEntryWindow" class="window windowHiden">
+		<div class="closeButton">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 121.31 122.876"><path fill="#e30007" d="M90.914,5.296c6.927-7.034,18.188-7.065,25.154-0.068 c6.961,6.995,6.991,18.369,0.068,25.397L85.743,61.452l30.425,30.855c6.866,6.978,6.773,18.28-0.208,25.247 c-6.983,6.964-18.21,6.946-25.074-0.031L60.669,86.881L30.395,117.58c-6.927,7.034-18.188,7.065-25.154,0.068 c-6.961-6.995-6.992-18.369-0.068-25.397l30.393-30.827L5.142,30.568c-6.867-6.978-6.773-18.28,0.208-25.247 c6.983-6.963,18.21-6.946,25.074,0.031l30.217,30.643L90.914,5.296L90.914,5.296z"/></svg>
+		</div>
+		<div id="entryTitle"></div>
+		<div id="entryTime">
+			<div class="gapBox">
+				<div class="gap" id="h1">2</div>
+				<div class="gap" id="h2">2</div>
+				<div class="gap" style="background: transparent; border: none; width: 1.5vh; color: white; box-shadow: none;">:</div>
+				<div class="gap" id="min1">5</div>
+				<div class="gap" id="min2">5</div>
+			</div>
+			<div id="dateRow"></div>
+		</div>
+		<div id="editEntry"></div>
+		<div class="menuRow"><div class="mainButton" id="saveButton" style="color: #b1f707;">Zapisz</div></div>
+	</div>
+	<div id="selectWindow" class="window windowHiden">
+		<div class="closeButton">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 121.31 122.876"><path fill="#e30007" d="M90.914,5.296c6.927-7.034,18.188-7.065,25.154-0.068 c6.961,6.995,6.991,18.369,0.068,25.397L85.743,61.452l30.425,30.855c6.866,6.978,6.773,18.28-0.208,25.247 c-6.983,6.964-18.21,6.946-25.074-0.031L60.669,86.881L30.395,117.58c-6.927,7.034-18.188,7.065-25.154,0.068 c-6.961-6.995-6.992-18.369-0.068-25.397l30.393-30.827L5.142,30.568c-6.867-6.978-6.773-18.28,0.208-25.247 c6.983-6.963,18.21-6.946,25.074,0.031l30.217,30.643L90.914,5.296L90.914,5.296z"/></svg>
+		</div>
+		<div id="listOfselect"></div>
+	</div>
+	<div id="infoWindow" class="windowHiden">
+		<div id="infoWindowContent"></div>
+		<div id="infoWindowAnswers"></div>
+	</div>
+</body>
+</html>
