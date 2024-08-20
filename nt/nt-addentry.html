@@ -234,23 +234,24 @@
 				return HTMLoperations.showWindow("typeWindow",1)
 			}
 		}
-		function showPackage()
+	}
+	function showPackage()
+	{
+		main.innerHTML = ""
+		for (let entry of packageEdit)
 		{
-			for (let entry of packageEdit)
+			const mainRow = document.createElement("div")
+			mainRow.className = "mainRow"
+			mainRow.innerHTML = `${(typesOfEntries[entry.type]||{}).name||"BŁĄD"} o ${data.showToUser.time(entry.time)} dnia ${data.showToUser.date(entry.time)}<br>`
+			const structure = typesOfEntries[entry.type].structure
+			for (let i=0 ; i<structure.length ; i++)
 			{
-				const mainRow = document.createElement("div")
-				mainRow.className = "mainRow"
-				mainRow.innerHTML = `${(typesOfEntries[entry.type]||{}).name||"BŁĄD"} o ${data.showToUser.time(entry.time)} dnia ${data.showToUser.date(entry.time)}<br>`
-				const structure = typesOfEntries[entry.type].structure
-				for (let i=0 ; i<structure.length ; i++)
+				if (entry[structure[i].name] != structure[i].default || structure[i].required)
 				{
-					if (entry[structure[i].name] != structure[i].default || structure[i].required)
-					{
-						mainRow.innerHTML += `${structure[i].namePL||structure[i].name}: ${data.showToUser[structure[i].showToUser](entry[structure[i].name])}<br>`
-					}
+					mainRow.innerHTML += `${structure[i].namePL||structure[i].name}: ${data.showToUser[structure[i].showToUser](entry[structure[i].name])}<br>`
 				}
-				main.appendChild(mainRow)
 			}
+			main.appendChild(mainRow)
 		}
 	}
 	edit=
@@ -350,8 +351,10 @@
 			}
 			else
 			{
-				HTMLoperations.info("Wpis zachowany.",[{text:"OK",function:function(){location.reload()}}])
-				setTimeout(()=>{location.reload()},3000)
+				HTMLoperations.info("Wpis zachowany.")
+				HTMLoperations.showWindow("typeWindow",0,1)
+				HTMLoperations.showWindow("editEntryWindow",0,1)
+				showPackage()
 			}
 		},
 		select:
